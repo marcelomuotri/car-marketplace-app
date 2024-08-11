@@ -1,0 +1,10 @@
+{
+  "Welcome to React": "Bienvenido a React y react-i18next",
+  "Hello": "Hola",
+  "Goodbye": "Adiós",
+  "featuredProducts": "Productos destacados",
+  "sort": "Ordenar",
+  "filter": "Filtros",
+  "categories": "Categorías",
+  "seeProfile": "Ver perfil"
+}

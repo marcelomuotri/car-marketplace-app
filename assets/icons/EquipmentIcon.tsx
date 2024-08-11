@@ -1,0 +1,25 @@
+import React from 'react'
+import Svg, { Rect, Defs, Pattern, Image } from 'react-native-svg'
+
+const EquipmentIcon = () => {
+  return (
+    <Svg width="25" height="24" viewBox="0 0 25 24" fill="none">
+      <Rect x="0.5" width="24" height="24" fill="url(#pattern0_664_5761)" />
+      <Defs>
+        <Pattern
+          id="pattern0_664_5761"
+          patternContentUnits="objectBoundingBox"
+          width="1"
+          height="1"
+        >
+          <Image
+            href="data:image/png;base64,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"
+            transform="scale(0.0147059)"
+          />
+        </Pattern>
+      </Defs>
+    </Svg>
+  )
+}
+
+export default EquipmentIcon

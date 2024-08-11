@@ -1,0 +1,25 @@
+import React from 'react'
+import Svg, { Rect, Defs, Pattern, Image } from 'react-native-svg'
+
+const KartingIcon = () => {
+  return (
+    <Svg width="31" height="30" viewBox="0 0 31 30" fill="none">
+      <Rect x="0.5" width="30" height="30" fill="url(#pattern0_604_6738)" />
+      <Defs>
+        <Pattern
+          id="pattern0_604_6738"
+          patternContentUnits="objectBoundingBox"
+          width="1"
+          height="1"
+        >
+          <Image
+            href="data:image/png;base64,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"
+            transform="scale(0.0125)"
+          />
+        </Pattern>
+      </Defs>
+    </Svg>
+  )
+}
+
+export default KartingIcon
