@@ -1,13 +1,27 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ThemedText } from '../ThemedText'
 import { View, Image, StyleSheet } from 'react-native'
 import SecondaryButton from '../Home/SecondaryButton'
 import { useTranslation } from 'react-i18next'
-import SimpleBottomDrawer from '../BottomDrawer'
+import { UserData } from '@/types'
 
-const VendorInfo = ({ user, initials, openDrawer }) => {
+interface VendorInfoProps {
+  user: UserData
+  initials: string
+  openDrawer?: () => void
+  showProfileButton?: boolean
+  showBorder?: boolean
+}
+
+const VendorInfo = ({
+  user,
+  initials,
+  openDrawer,
+  showProfileButton,
+  showBorder = false,
+}: VendorInfoProps) => {
   const { t } = useTranslation()
-  const styles = createStyles()
+  const styles = createStyles(showBorder)
 
   const renderAvatar = () => {
     if (user?.photoToShowUrl) {
@@ -39,13 +53,16 @@ const VendorInfo = ({ user, initials, openDrawer }) => {
             </ThemedText>
           </View>
         </View>
-        <SecondaryButton title={t('seeProfile')} onPress={openDrawer} />
+
+        {showProfileButton && (
+          <SecondaryButton title={t('seeProfile')} onPress={openDrawer} />
+        )}
       </View>
     </>
   )
 }
 
-const createStyles = () => {
+const createStyles = (showBorder: boolean) => {
   return StyleSheet.create({
     title: {
       fontSize: 16,
@@ -55,8 +72,8 @@ const createStyles = () => {
       paddingVertical: 9,
       borderTopColor: '#F0F2F1',
       borderBottomColor: '#F0F2F1',
-      borderBottomWidth: 1,
-      borderTopWidth: 1,
+      borderBottomWidth: showBorder ? 1 : 0,
+      borderTopWidth: showBorder ? 1 : 0,
       flexDirection: 'row',
     },
     vendorZone: {

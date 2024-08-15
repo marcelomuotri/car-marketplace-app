@@ -8,7 +8,14 @@ const store = configureStore({
     api: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware), // Agregar el middleware de tu RTK Query API
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignorar específicamente el path donde se almacena el incremento
+        ignoredActions: ['api/executeQuery/fulfilled'],
+        // O si prefieres ignorar todos los paths:
+        ignoredPaths: ['api.mutations'],
+      },
+    }).concat(api.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

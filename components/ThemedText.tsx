@@ -66,8 +66,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
   },
   default: {
-    fontSize: 12,
-    lineHeight: 24,
+    fontSize: 14,
     fontFamily: 'Inter_400Regular',
   },
   categoryIcon: {
@@ -79,13 +78,11 @@ const styles = StyleSheet.create({
   },
   defaultSemiBold: {
     fontSize: 14,
-    lineHeight: 24,
     fontWeight: '600',
     fontFamily: 'Inter_600SemiBold',
   },
   title: {
     fontSize: 14,
-    lineHeight: 24,
     fontWeight: '500',
     fontFamily: 'Inter_500Medium',
   },

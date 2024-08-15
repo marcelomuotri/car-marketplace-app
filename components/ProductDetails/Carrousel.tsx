@@ -21,13 +21,13 @@ const Carrousel = ({ productArray }) => {
       <Carousel
         ref={ref}
         width={width}
-        height={286}
+        height={260}
         data={productArray}
         renderItem={renderItem}
         onSnapToItem={(index) => setActiveIndex(index)} // Actualiza el índice activo
         loop={false}
       />
-      {/* <View style={styles.paginationContainer}>
+      <View style={styles.paginationContainer}>
         {productArray.map((_, index) => (
           <View
             key={index}
@@ -37,7 +37,7 @@ const Carrousel = ({ productArray }) => {
             ]}
           />
         ))}
-      </View> */}
+      </View>
     </View>
   )
 }
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 279,
+    height: 284,
   },
   itemContainer: {
     justifyContent: 'center',

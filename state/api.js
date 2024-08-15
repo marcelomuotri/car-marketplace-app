@@ -10,10 +10,18 @@ import {
   query,
   where,
   getDoc,
+  increment,
 } from 'firebase/firestore'
 
 // Crear un baseQuery personalizado para Firebase
-const firebaseBaseQuery = async ({ method, path, data, filters, populate }) => {
+const firebaseBaseQuery = async ({
+  method,
+  path,
+  data,
+  filters,
+  populate,
+  incrementField,
+}) => {
   const collectionRef = collection(db, path)
   try {
     switch (method) {
@@ -25,7 +33,7 @@ const firebaseBaseQuery = async ({ method, path, data, filters, populate }) => {
           const docSnapshot = await getDoc(docRef)
           if (!docSnapshot.exists()) {
             console.log('No such document!')
-            return { data: [] } // o maneja como sea necesario
+            return { data: [] }
           }
           const data = docSnapshot.data()
           if (populate.length > 0) {
@@ -42,8 +50,14 @@ const firebaseBaseQuery = async ({ method, path, data, filters, populate }) => {
           // Consulta general con posibles filtros
           q = query(collectionRef)
           if (filters && Object.keys(filters).length > 0) {
-            const filterClauses = Object.entries(filters).map(([key, value]) =>
-              where(key, '==', value),
+            const filterClauses = Object.entries(filters).map(
+              ([key, value]) => {
+                if (Array.isArray(value)) {
+                  return where(key, 'array-contains-any', value)
+                } else {
+                  return where(key, '==', value)
+                }
+              },
             )
             q = query(collectionRef, ...filterClauses)
           }
@@ -77,9 +91,15 @@ const firebaseBaseQuery = async ({ method, path, data, filters, populate }) => {
 
       case 'PUT':
         const docToUpdateRef = doc(db, path, data.id)
-        console.log(docToUpdateRef)
-        console.log(data)
-        await updateDoc(docToUpdateRef, data)
+
+        if (incrementField) {
+          await updateDoc(docToUpdateRef, {
+            [incrementField]: increment(1), // Incrementa el campo especificado en 1
+          })
+        } else {
+          await updateDoc(docToUpdateRef, data)
+        }
+
         return { data: { id: data.id, ...data } }
 
       default:
@@ -90,7 +110,6 @@ const firebaseBaseQuery = async ({ method, path, data, filters, populate }) => {
     return { error: err.message }
   }
 }
-
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: firebaseBaseQuery,
@@ -122,10 +141,11 @@ export const api = createApi({
       invalidatesTags: [{ type: 'Entity' }],
     }),
     updateEntity: builder.mutation({
-      query: ({ collectionPath, data }) => ({
+      query: ({ collectionPath, data, incrementField }) => ({
         method: 'PUT',
         path: collectionPath,
         data,
+        incrementField,
       }),
       invalidatesTags: [{ type: 'Entity' }],
     }),

@@ -7,9 +7,14 @@ import FilterIcon from '@/assets/icons/FilterIcon'
 interface FilterButtonProps {
   title: string
   filtersApplied?: number
+  onPress?: () => void
 }
 
-const FilterButton = ({ title, filtersApplied = 0 }: FilterButtonProps) => {
+const FilterButton = ({
+  title,
+  filtersApplied = 0,
+  onPress,
+}: FilterButtonProps) => {
   const FilterButtonBorderColor = useThemeColor({}, 'borderFilterButton')
   const FilterButtonSelectedColor = useThemeColor({}, 'selectedFilterButton')
   const TintColor = useThemeColor({}, 'tint')
@@ -23,7 +28,7 @@ const FilterButton = ({ title, filtersApplied = 0 }: FilterButtonProps) => {
   )
 
   return (
-    <TouchableOpacity style={styles.headerButton}>
+    <TouchableOpacity style={styles.headerButton} onPress={onPress}>
       <ThemedText type="default">{title}</ThemedText>
       {filtersApplied > 0 ? (
         <View style={styles.filterCountContainer}>

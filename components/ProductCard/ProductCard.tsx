@@ -4,14 +4,14 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
   Pressable,
+  Platform,
 } from 'react-native'
 import { Product } from '@/types'
 import { ThemedText } from '../ThemedText'
-import { router } from 'expo-router'
 import { getCurrency } from '@/components/utils/getCurrency'
-import { Link } from 'expo-router'
+import { useRouter } from 'expo-router'
+import { useIncrementProductField } from '@/state/api/productApi'
 
 interface ProductCardProps {
   product: Product
@@ -22,24 +22,33 @@ const CARD_WIDTH = width * 0.43
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const currency = getCurrency(product.currency)
+  const router = useRouter()
+  const { incrementField } = useIncrementProductField()
+
+  const handlePress = () => {
+    // Incrementar el contador de visitas
+    incrementField(product.id, 'visits')
+
+    // Navegar a la pantalla de detalles del producto
+    router.push({ pathname: 'productDetails/[id]', params: { id: product.id } })
+  }
 
   return (
-    <Link
-      href={{ pathname: 'productDetails/[id]', params: { id: product.id } }}
-      asChild
-    >
-      <Pressable>
-        <View style={[styles.product, { width: CARD_WIDTH }]}>
-          <Image source={{ uri: product.photo1Url }} style={styles.image} />
-          <View style={{ padding: 13 }}>
-            <ThemedText type="default">{product.title}</ThemedText>
-            <ThemedText type="defaultSemiBold">
-              {currency} {product.price}
-            </ThemedText>
-          </View>
+    <Pressable onPress={handlePress}>
+      <View style={[styles.product, { width: CARD_WIDTH }]}>
+        <Image source={{ uri: product.photo1Url }} style={styles.image} />
+        <View
+          style={[styles.infoContainer, Platform.OS === 'ios' && styles.iosGap]}
+        >
+          <ThemedText type="default" numberOfLines={2} ellipsizeMode="tail">
+            {product.title}
+          </ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {currency} {product.price}
+          </ThemedText>
         </View>
-      </Pressable>
-    </Link>
+      </View>
+    </Pressable>
   )
 }
 
@@ -54,7 +63,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 6,
     backgroundColor: '#FAFAFC',
-    height: 210,
   },
   image: {
     width: '100%',
@@ -63,6 +71,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 6,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+  },
+  infoContainer: {
+    padding: 13,
+    borderRadius: 6,
+    height: 80,
+  },
+  iosGap: {
+    gap: 4,
   },
   title: {
     fontSize: 18,

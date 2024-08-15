@@ -17,6 +17,7 @@ export const Colors = {
     borderRadius: 8,
     borderFilterButton: '#F0F2F1',
     selectedFilterButton: '#E9FFF8',
+    buttontextColor: '#FFFFFF',
   },
   dark: {
     text: '#ECEDEE',
@@ -28,5 +29,6 @@ export const Colors = {
     borderRadius: 8,
     borderFilterButton: '#F0F2F1',
     selectedFilterButton: '#E9FFF8',
+    buttontextColor: '#FFFFFF',
   },
 }

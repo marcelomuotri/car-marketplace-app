@@ -2,16 +2,16 @@ import React from 'react'
 import { Text, FlatList, StyleSheet, View } from 'react-native'
 import ProductCard from '../../ProductCard/ProductCard'
 import { Product } from '@/types'
-import { ThemedText } from '../../ThemedText'
-import FilterButton from '../../FilterButton'
+
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
 
 interface ListProductProps {
   products: Product[]
+  filtersApplied: number
 }
 
-const ProductList = ({ products }: ListProductProps) => {
+const ProductList = ({ products, filtersApplied }: ListProductProps) => {
   const { t } = useTranslation()
   if (products?.length === 0) {
     return <Text>No products available.</Text>
@@ -19,13 +19,6 @@ const ProductList = ({ products }: ListProductProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText type="title">{t('featuredProducts')} </ThemedText>
-        <View style={styles.buttonContainer}>
-          <FilterButton title={t('sort')} />
-          <FilterButton title={t('filter')} filtersApplied={2} />
-        </View>
-      </View>
       <View>
         <FlatList
           data={products}
@@ -47,7 +40,6 @@ export default ProductList
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     gap: 12,
   },
   header: {

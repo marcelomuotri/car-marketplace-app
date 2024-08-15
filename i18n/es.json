@@ -6,5 +6,18 @@
   "sort": "Ordenar",
   "filter": "Filtros",
   "categories": "Categorías",
-  "seeProfile": "Ver perfil"
+  "seeProfile": "Ver perfil",
+  "subCategory": "Subcategoría",
+  "brand": "Marca",
+  "model": "Modelo",
+  "condition": "Condición",
+  "year": "Año",
+  "homologation": "Homologación",
+  "size": "Tamaño",
+  "description": "Descripción",
+  "contactData": "Datos de contacto",
+  "seeContact": "Ver contacto",
+  "phone": "Teléfono",
+  "email": "Email",
+  "seeSellerProfile": "Ver perfil del vendedor"
 }
