@@ -27,6 +27,11 @@ export interface UserData {
   dni: string | null
 }
 
+export type BuyerProfile = Pick<
+  UserData,
+  'name' | 'surname' | 'phoneNumber' | 'address' | 'city' | 'state'
+>
+
 export interface AuthState {
   user: string | null
   loading: boolean
@@ -61,7 +66,7 @@ export interface ProductUpload {
   homologation?: boolean | null
   competition?: string[]
   active: boolean
-  visitors: number
+  visits: number
   contacts: number
 }
 
@@ -90,5 +95,16 @@ export interface SupportQuery extends SupportQueryUpload {
   email: string
   uid: string
   name: string | null
+  createdAt: string
+}
+
+export interface FavoritesUpload {
+  uid: string
+  productId: string
+}
+
+export interface Favorites extends FavoritesUpload {
+  uid: string
+  productId: string
   createdAt: string
 }

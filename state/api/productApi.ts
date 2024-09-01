@@ -5,6 +5,7 @@ import {
   useDeleteEntityMutation,
   useUpdateEntityMutation,
   useGetEntitiesQuery,
+  useGetEntitiesByIdsQuery,
 } from '../api'
 import { RootState } from '../store'
 import { ProductUpload } from '@/types'
@@ -16,7 +17,7 @@ export const useGetAllProducts = ({ populate, filters }: any) => {
   const { data, error, isLoading } = useGetEntitiesQuery({
     collectionPath: base,
     populate,
-    filters: { active: true, ...filters },
+    filters: { ...filters },
   })
 
   return {
@@ -48,6 +49,20 @@ export const useGetProductById = (id: string) => {
 
   return {
     product: data ? data[0] : null,
+    isLoading,
+    error,
+  }
+}
+
+export const useGetProductsByIds = ({ ids, populate }: any) => {
+  const { data, error, isLoading } = useGetEntitiesByIdsQuery({
+    collectionPath: base,
+    ids: ids,
+    populate,
+  })
+
+  return {
+    products: data,
     isLoading,
     error,
   }

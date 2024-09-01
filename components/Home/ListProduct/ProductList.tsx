@@ -19,19 +19,17 @@ const ProductList = ({ products, filtersApplied }: ListProductProps) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          renderItem={({ item }) => <ProductCard product={item} />}
-          columnWrapperStyle={styles.row}
-          ListFooterComponent={Platform.select({
-            ios: <View style={styles.iosFooter} />,
-            android: <View style={styles.androidFooter} />,
-          })}
-        />
-      </View>
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        renderItem={({ item }) => <ProductCard product={item} />}
+        columnWrapperStyle={styles.row}
+        ListFooterComponent={Platform.select({
+          ios: <View style={styles.iosFooter} />,
+          android: <View style={styles.androidFooter} />,
+        })}
+      />
     </View>
   )
 }
@@ -41,6 +39,7 @@ export default ProductList
 const styles = StyleSheet.create({
   container: {
     gap: 12,
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

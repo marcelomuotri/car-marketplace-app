@@ -34,6 +34,9 @@ const authSlice = createSlice({
     loginLoading(state) {
       state.loading = true
     },
+    loginStopLoading(state) {
+      state.loading = false
+    },
     logoutSuccess(state) {
       state.user = null
       state.loading = false
@@ -43,7 +46,12 @@ const authSlice = createSlice({
   extraReducers: (builder) => {},
 })
 
-export const { loginFailure, loginSuccess, logoutSuccess, loginLoading } =
-  authSlice.actions
+export const {
+  loginFailure,
+  loginSuccess,
+  logoutSuccess,
+  loginLoading,
+  loginStopLoading,
+} = authSlice.actions
 // Exporta el reducer de la slice
 export const authReducer = authSlice.reducer

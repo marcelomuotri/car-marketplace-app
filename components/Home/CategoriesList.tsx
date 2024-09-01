@@ -4,19 +4,23 @@ import { useTranslation } from 'react-i18next'
 import { FlatList, View, StyleSheet, TouchableOpacity } from 'react-native'
 
 interface CategoriesListProps {
-  selectedCompetition: string
-  setSelectedCategory: (categoryId: string) => void
+  filters: any
+  setFilters: (filters: any) => void
   categoriesToShow: any
 }
 
 const CategoriesList = ({
-  setSelectedCategory,
+  setFilters,
   categoriesToShow,
 }: CategoriesListProps) => {
   const { t } = useTranslation()
 
   const onHandleSelectCategory = (id: string) => {
-    setSelectedCategory(id)
+    setFilters((prevFilters: any) => ({
+      ...prevFilters,
+      category: id,
+      subCategory: null, // Reiniciar subCategoría al cambiar de categoría
+    }))
   }
 
   return (

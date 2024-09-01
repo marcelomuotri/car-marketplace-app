@@ -11,7 +11,48 @@ import {
   where,
   getDoc,
   increment,
+  Timestamp,
 } from 'firebase/firestore'
+
+const convertIsoStringToTimestamp = (data) => {
+  const convertedData = {}
+
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const value = data[key]
+
+      // Verifica si el valor es un ISOString
+      if (typeof value === 'string' && !isNaN(Date.parse(value))) {
+        // Convierte el ISOString a Firebase Timestamp
+        convertedData[key] = Timestamp.fromDate(new Date(value))
+      } else {
+        convertedData[key] = value
+      }
+    }
+  }
+
+  return convertedData
+}
+
+const convertTimestampToIsoString = (data) => {
+  const convertedData = {}
+
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const value = data[key]
+
+      // Verifica si el valor es un Firebase Timestamp
+      if (value instanceof Timestamp) {
+        // Convierte el Firebase Timestamp a ISOString
+        convertedData[key] = value.toDate().toISOString()
+      } else {
+        convertedData[key] = value
+      }
+    }
+  }
+
+  return convertedData
+}
 
 // Crear un baseQuery personalizado para Firebase
 const firebaseBaseQuery = async ({
@@ -36,16 +77,17 @@ const firebaseBaseQuery = async ({
             return { data: [] }
           }
           const data = docSnapshot.data()
+          const convertedData = convertTimestampToIsoString(data) // Convertir los timestamps a ISOString
           if (populate.length > 0) {
             const populatedData = {}
             populate.forEach((field) => {
-              if (data.hasOwnProperty(field)) {
-                populatedData[field] = data[field]
+              if (convertedData.hasOwnProperty(field)) {
+                populatedData[field] = convertedData[field]
               }
             })
             return { data: [{ id: docSnapshot.id, ...populatedData }] }
           }
-          return { data: [{ id: docSnapshot.id, ...data }] }
+          return { data: [{ id: docSnapshot.id, ...convertedData }] }
         } else {
           // Consulta general con posibles filtros
           q = query(collectionRef)
@@ -65,6 +107,28 @@ const firebaseBaseQuery = async ({
           return {
             data: querySnapshot.docs.map((doc) => {
               const data = doc.data()
+              const convertedData = convertTimestampToIsoString(data) // Convertir los timestamps a ISOString
+              if (populate.length > 0) {
+                const populatedData = {}
+                populate.forEach((field) => {
+                  if (convertedData.hasOwnProperty(field)) {
+                    populatedData[field] = convertedData[field]
+                  }
+                })
+                return { id: doc.id, ...populatedData }
+              }
+              return { id: doc.id, ...convertedData }
+            }),
+          }
+        }
+      case 'GET_BY_IDS': // Nuevo caso para manejar la consulta por IDs
+        if (filters && filters.ids && filters.ids.length > 0) {
+          const promises = filters.ids.map(async (id) => {
+            const docRef = doc(collectionRef, id)
+            const docSnapshot = await getDoc(docRef)
+            if (docSnapshot.exists()) {
+              let data = docSnapshot.data()
+              data = convertTimestampToIsoString(data) // Convertir los timestamps a ISOString
               if (populate.length > 0) {
                 const populatedData = {}
                 populate.forEach((field) => {
@@ -72,25 +136,35 @@ const firebaseBaseQuery = async ({
                     populatedData[field] = data[field]
                   }
                 })
-                return { id: doc.id, ...populatedData }
+                return { id: docSnapshot.id, ...populatedData }
               }
-              return { id: doc.id, ...data }
-            }),
-          }
+              return { id: docSnapshot.id, ...data }
+            } else {
+              return null
+            }
+          })
+
+          const results = await Promise.all(promises)
+          const filteredResults = results.filter((result) => result !== null)
+          return { data: filteredResults }
+        } else {
+          return { data: [] }
         }
 
       case 'POST':
-        const docRef = await addDoc(collectionRef, data)
+        const parsedData = convertIsoStringToTimestamp(data)
+        const docRef = await addDoc(collectionRef, parsedData)
         await updateDoc(docRef, { id: docRef.id }) // Update document to include the id
         return { data: { id: docRef.id, ...data } }
 
       case 'DELETE':
         const docToDeleteRef = doc(db, path, data.id) // Assuming `data` has an id field
         await deleteDoc(docToDeleteRef)
-        return { data: { id: data.id } } // or some success indicator
+        return { data: { id: data.id } } // or some success indicator,
 
       case 'PUT':
         const docToUpdateRef = doc(db, path, data.id)
+        const parsedUpdateData = convertIsoStringToTimestamp(data)
 
         if (incrementField) {
           await updateDoc(docToUpdateRef, {
@@ -120,6 +194,15 @@ export const api = createApi({
         method: 'GET',
         path: collectionPath,
         filters,
+        populate,
+      }),
+      providesTags: [{ type: 'Entity' }],
+    }),
+    getEntitiesByIds: builder.query({
+      query: ({ collectionPath, ids = [], populate = [] }) => ({
+        method: 'GET_BY_IDS',
+        path: collectionPath,
+        filters: { ids },
         populate,
       }),
       providesTags: [{ type: 'Entity' }],
@@ -154,6 +237,7 @@ export const api = createApi({
 
 export const {
   useGetEntitiesQuery,
+  useGetEntitiesByIdsQuery,
   useAddEntityMutation,
   useDeleteEntityMutation,
   useUpdateEntityMutation,

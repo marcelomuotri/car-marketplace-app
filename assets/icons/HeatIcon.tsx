@@ -1,9 +1,9 @@
 import React from 'react'
 import Svg, { Path } from 'react-native-svg'
 
-const HeartIcon = () => {
+const HeartIcon = ({ color = 'none' }) => {
   return (
-    <Svg width="23" height="23" viewBox="0 0 23 23" fill="none">
+    <Svg width="23" height="23" viewBox="0 0 23 23" fill={color}>
       <Path
         fillRule="evenodd"
         clipRule="evenodd"

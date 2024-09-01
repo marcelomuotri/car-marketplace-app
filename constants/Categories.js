@@ -12,6 +12,7 @@ import ToolsIcon from '@/assets/icons/ToolsIcon'
 import ServicesIcon from '@/assets/icons/ServicesIcon'
 
 export const competitionCategories = [
+  //aca habria que tener las singulares para las competiciones
   { id: '1', label: 'Autos', value: 'auto', Icon: <CarIcon /> },
   { id: '2', label: 'Motos', value: 'moto', Icon: <MotorbikeIcon /> },
   { id: '3', label: 'ATVs', value: 'atv', Icon: <ATVsIcon /> },

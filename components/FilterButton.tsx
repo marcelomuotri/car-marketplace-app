@@ -29,7 +29,9 @@ const FilterButton = ({
 
   return (
     <TouchableOpacity style={styles.headerButton} onPress={onPress}>
-      <ThemedText type="default">{title}</ThemedText>
+      <ThemedText style={styles.filterButtonTitle} type="default">
+        {title}
+      </ThemedText>
       {filtersApplied > 0 ? (
         <View style={styles.filterCountContainer}>
           <ThemedText style={styles.filterCount}>{filtersApplied}</ThemedText>
@@ -52,24 +54,28 @@ const createStyles = (
       borderWidth: 1,
       borderRadius: 5,
       borderColor: FilterButtonBorderColor,
-      paddingLeft: 8,
-      paddingRight: 8,
-      paddingBottom: 6,
-      paddingTop: 6,
+      paddingLeft: 6,
+      paddingRight: 6,
+      paddingBottom: 4,
+      paddingTop: 4,
       flexDirection: 'row',
       gap: 7,
       alignItems: 'center',
       backgroundColor: isSelected ? FilterButtonSelectedColor : 'transparent',
     },
+    filterButtonTitle: {
+      fontSize: 12,
+    },
     filterCountContainer: {
       backgroundColor: TintColor,
       borderRadius: 12,
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       justifyContent: 'center',
       alignItems: 'center',
     },
     filterCount: {
+      fontSize: 12,
       color: '#fff',
       fontWeight: '700',
     },

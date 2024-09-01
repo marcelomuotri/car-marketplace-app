@@ -1,0 +1,3 @@
+estuve viendo lo de los filtros, lo ultimo que hice fue crear esa funcion en utils para estandarizar
+la manera en la queu cargo la marca y modelo y todas esas cosas.
+getOptions en fieldUtils

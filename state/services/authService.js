@@ -6,15 +6,16 @@ import {
   signOut,
 } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
 import {
   loginFailure,
   loginSuccess,
   logoutSuccess,
   loginLoading,
+  loginStopLoading,
 } from '../slices/authSlice'
 import { auth, db } from '../../firebaseConfig'
 import { createUserPayload } from '@/models/authModel'
+import { onAuthStateChanged, updatePassword } from 'firebase/auth'
 
 export const useAuthService = () => {
   const dispatch = useDispatch()
@@ -101,5 +102,30 @@ export const useAuthService = () => {
       console.log(error)
     }
   }
-  return { loginUser, logoutUser, createUser }
+
+  const changePassword = async (oldPassword, newPassword) => {
+    dispatch(loginLoading())
+    try {
+      const user = auth.currentUser
+      const email = user.email
+
+      // Inicia sesión con la contraseña antigua
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        oldPassword,
+      )
+
+      await updatePassword(userCredential.user, newPassword)
+      dispatch(loginStopLoading())
+
+      return { status: 'ok' }
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error)
+      dispatch(loginStopLoading())
+      return { status: 'error', message: error.message }
+    }
+  }
+
+  return { loginUser, logoutUser, createUser, changePassword }
 }

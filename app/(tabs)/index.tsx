@@ -16,76 +16,79 @@ import { competitionCategories, staticCategories } from '@/constants/Categories'
 
 const Index: React.FC = () => {
   const { t } = useTranslation()
-  const [filtersApplied, setFiltersApplied] = useState(0)
-  const [selectedCompetition, setSelectedCompetition] = useState('auto')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
-    null,
-  )
+  const [filters, setFilters] = useState({
+    competition: 'auto',
+    category: null,
+    subCategory: null,
+  })
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
 
   const competitionCategoryToShow = competitionCategories.filter(
-    (category) => category.value === selectedCompetition,
+    (category) => category.value === filters.competition,
   )
 
   const categoriesToShow = [...competitionCategoryToShow, ...staticCategories]
 
-  // Buscar el valor de la categoría seleccionada
   const selectedCategoryLabel = categoriesToShow
-    .find((category) => category.id === selectedCategory)
+    .find((category) => category.id === filters.category)
     ?.label.toLowerCase()
 
-  // Configura los filtros
-  const filters: any = {
+  const productFilters: any = {
     active: true,
-    competition: [selectedCompetition],
+    competition: [filters.competition],
   }
 
   if (selectedCategoryLabel) {
-    filters.category = selectedCategoryLabel // Usar el label de la categoría convertida en minúscula
+    productFilters.category = selectedCategoryLabel
   }
 
-  if (selectedSubCategory) {
-    filters.subCategory = selectedSubCategory
+  if (filters.subCategory) {
+    productFilters.subCategory = filters.subCategory
   }
-  //
 
   const { products, isLoading } = useGetAllProducts({
     populate: ['title', 'price', 'photo1Url', 'currency'],
-    filters: filters,
+    filters: productFilters,
   })
 
   const { categories, isLoadingCategories } = useGetAllCategories()
 
   useEffect(() => {
-    setSelectedCategory(null)
-    setSelectedSubCategory(null)
-  }, [selectedCompetition])
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category: null,
+      subCategory: null,
+    }))
+  }, [filters.competition])
 
   const toggleModal = () => {
     setIsFilterModalVisible(!isFilterModalVisible)
   }
 
-  if (isLoading || isLoadingCategories) {
-    return <Loader />
+  const applyFilters = (newFilters: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...newFilters,
+    }))
+    setIsFilterModalVisible(false)
   }
 
-  const applyFilters = (filters: { category: string; subCategory: string }) => {
-    setSelectedCategory(filters.category)
-    setSelectedSubCategory(filters.subCategory)
-    setIsFilterModalVisible(false) // Cerrar el modal después de aplicar los filtros
+  if (isLoading || isLoadingCategories || !products || !categories) {
+    return <Loader />
   }
 
   return (
     <BasicLayout>
       <TopBar
-        selectedCompetition={selectedCompetition}
-        setSelectedCompetition={setSelectedCompetition}
+        selectedCompetition={filters.competition}
+        setSelectedCompetition={(competition) =>
+          setFilters((prev) => ({ ...prev, competition }))
+        }
       />
       <ThemedTextInput iconName="home" placeholder="Buscar" />
       <CategoriesList
-        selectedCompetition={selectedCompetition}
-        setSelectedCategory={setSelectedCategory}
+        filters={filters}
+        setFilters={setFilters}
         categoriesToShow={categoriesToShow}
       />
       <View style={styles.header}>
@@ -94,15 +97,17 @@ const Index: React.FC = () => {
           <FilterButton title={t('sort')} />
           <FilterButton
             title={t('filter')}
-            filtersApplied={filtersApplied}
+            filtersApplied={Object.keys(filters).length - 1} // -1 porque competition no cuenta como filtro
             onPress={toggleModal}
           />
         </View>
       </View>
-      <ProductList products={products} filtersApplied={filtersApplied} />
+      <ProductList
+        products={products}
+        filtersApplied={Object.keys(filters).length - 1}
+      />
       <FiltersModal
-        selectedCategory={selectedCategory}
-        selectedSubCategory={selectedSubCategory}
+        filters={filters}
         categoriesToShow={categoriesToShow}
         isVisible={isFilterModalVisible}
         toggleModal={toggleModal}

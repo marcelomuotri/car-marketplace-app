@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Pressable,
   Linking,
 } from 'react-native'
 import {
@@ -21,7 +20,6 @@ import { getCurrency } from '@/components/utils/getCurrency'
 import { useGetUserById } from '@/state/api/userApi'
 import Loader from '@/components/Loader'
 import VendorInfo from '@/components/ProductDetails/VendorInfo'
-import BottomDrawer from '@/components/BottomDrawer'
 import ThemedButton from '@/components/ThemedButton'
 import ThemedLabeledText from '@/components/ThemedLabeledText'
 import SecondaryButton from '@/components/Home/SecondaryButton'
@@ -30,12 +28,20 @@ import { getFieldsToShow } from '@/components/Home/utils/fieldUtils'
 import ShareIcon from '@/assets/icons/ShareIcon'
 import HeartIcon from '@/assets/icons/HeatIcon'
 import BottomSheetDrawer from '@/components/BottomSheetDrawer'
+import {
+  useAddFavorite,
+  useGetOneFavorite,
+  useDeleteFavorite,
+} from '@/state/api/favoritesApi'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/state/store'
 
-const { height, width } = Dimensions.get('window')
+const { width } = Dimensions.get('window')
 
 const Index = () => {
   const { t } = useTranslation()
   const { id } = useLocalSearchParams()
+  const { userData } = useSelector((state: RootState) => state.auth)
   const { product, isLoading } = useGetProductById(id as string)
   const { incrementField } = useIncrementProductField()
   const { user, isLoadingUser } = useGetUserById(product?.uid || '')
@@ -43,6 +49,14 @@ const Index = () => {
   const currency = getCurrency(product?.currency)
   const [initials, setInitials] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { addNewFavorite } = useAddFavorite()
+  const { removeFavorite } = useDeleteFavorite()
+
+  const { favorite, isLoadingFavorite } = useGetOneFavorite({
+    filters: { uid: userData?.uid, productId: id },
+  })
+
+  const isFavorited = favorite?.id
 
   useEffect(() => {
     if (user?.name) {
@@ -53,7 +67,7 @@ const Index = () => {
     }
   }, [user, initials])
 
-  if (isLoadingUser || isLoading) {
+  if (isLoadingUser || isLoading || isLoadingFavorite) {
     return <Loader />
   }
 
@@ -84,6 +98,14 @@ const Index = () => {
     })
   }
 
+  const onAddToFavorites = () => {
+    if (isFavorited) {
+      removeFavorite(favorite?.id)
+    } else {
+      addNewFavorite({ uid: userData.uid, productId: id as string })
+    }
+  }
+
   const fieldsToShow = getFieldsToShow(product, t)
 
   return (
@@ -100,7 +122,9 @@ const Index = () => {
                 <TouchableOpacity onPress={shareToWhatsApp}>
                   <ShareIcon />
                 </TouchableOpacity>
-                <HeartIcon />
+                <TouchableOpacity onPress={onAddToFavorites}>
+                  <HeartIcon color={isFavorited ? 'red' : 'none'} />
+                </TouchableOpacity>
               </View>
             </View>
           </View>

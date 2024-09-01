@@ -36,3 +36,69 @@ export const getFieldsToShow = (product: Product, t: Function) => {
       return [] // Devuelve un array vacío por defecto
   }
 }
+
+//funcion para armar las distintas subcategories
+export const getSubCategoryOptions = (selectedCategoryValue, categories) => {
+  const subCategoryOptions = selectedCategoryValue
+    ? categories
+        .find(
+          (category) =>
+            category.name === selectedCategoryValue?.label.toLowerCase(),
+        )
+        ?.subCategories?.map((subCategory, index) => ({
+          label:
+            subCategory.charAt(0).toUpperCase() +
+            subCategory.slice(1).toLowerCase(), // Primera letra en mayúscula, resto en minúscula
+          value: subCategory.toLowerCase(), // Todo en minúsculas
+          id: index.toString(), // Índice como string para el ID
+        }))
+    : []
+  return subCategoryOptions
+}
+
+export const getBrandOptions = (selectedCategoryValue, categories) => {
+  if (!selectedCategoryValue) return []
+
+  const subCategoryOptions = categories.find(
+    (category) => category.name === selectedCategoryValue?.label.toLowerCase(),
+  )
+
+  if (!subCategoryOptions?.brands) return []
+
+  const brandsOptions = Object.keys(subCategoryOptions.brands).map(
+    (brand, index) => ({
+      label: brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase(), // Primera letra en mayúscula, resto en minúscula
+      value: brand.toLowerCase(), // Todo en minúsculas
+      id: index.toString(), // Índice como string para el ID
+    }),
+  )
+
+  return brandsOptions
+}
+
+export const getOptions = (
+  selectedCategoryValue: any,
+  categories: any[],
+  field: string,
+  shouldUseKeys: boolean = false,
+) => {
+  if (!selectedCategoryValue) return []
+
+  const categoryOptions = categories.find(
+    (category) => category.name === selectedCategoryValue?.label.toLowerCase(),
+  )
+
+  if (!categoryOptions || !categoryOptions[field]) return []
+
+  const items = shouldUseKeys
+    ? Object.keys(categoryOptions[field])
+    : categoryOptions[field]
+
+  const options = items.map((item: string, index: number) => ({
+    label: item.charAt(0).toUpperCase() + item.slice(1).toLowerCase(),
+    value: item.toLowerCase(),
+    id: index.toString(),
+  }))
+
+  return options
+}

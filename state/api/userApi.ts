@@ -1,5 +1,5 @@
 // src/framework/api/productApi.js
-import { useGetEntitiesQuery } from '../api'
+import { useGetEntitiesQuery, useUpdateEntityMutation } from '../api'
 
 const base = 'users'
 
@@ -14,6 +14,25 @@ export const useGetUserById = (id: string) => {
     isLoadingUser: isLoading,
     error,
   }
+}
+
+export const useUpdateUser = () => {
+  const [updateUser, { isLoading: isUpdating, error }] =
+    useUpdateEntityMutation()
+
+  const updateUserData = async (userData: any) => {
+    try {
+      const result = await updateUser({
+        collectionPath: base,
+        data: userData,
+      })
+      return result
+    } catch (e) {
+      console.error('Failed to update product:', e)
+    }
+  }
+
+  return { updateUserData, isUpdating, error }
 }
 
 // Puedes añadir aquí más hooks según sean necesarios
