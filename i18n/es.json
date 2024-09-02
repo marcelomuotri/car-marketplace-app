@@ -39,5 +39,9 @@
   "password6Caracters": "La contraseña debe tener mínimo 6 caracteres",
   "updatedProfile": "Tu perfil ha sido actualizado",
   "updatedPassword": "Tu contraseña ha sido actualizada",
-  "completeAllFields": "Debés completar todos los campos"
+  "completeAllFields": "Debés completar todos los campos",
+  "publicationsProblem": "Problemas con una publicación",
+  "profileProblem": "Problemas con mi cuenta",
+  "verificationProblem": "Problemas con la verificación",
+  "others": "Otros"
 }

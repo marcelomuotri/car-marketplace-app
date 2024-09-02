@@ -20,6 +20,7 @@ interface ThemedInputProps {
   placeholder?: string
   options?: { label: string; value: string }[]
   defaultValue?: any
+  numberOfLines?: number
 }
 
 const ThemedInput: React.FC<ThemedInputProps> = ({
@@ -30,8 +31,12 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
   placeholder,
   options = [],
   defaultValue,
+  numberOfLines,
 }) => {
   const [modalVisible, setModalVisible] = useState(false)
+  const [selectedLabel, setSelectedLabel] = useState<string | undefined>(
+    undefined,
+  )
 
   const renderInputField = ({ field }: any) => {
     switch (type) {
@@ -55,7 +60,13 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
             }
             inputContainerStyle={styles.inputContainerStyle}
             containerStyle={styles.containerStyle}
-            inputStyle={styles.inputStyle}
+            //inputStyle={styles.inputStyle}
+            inputStyle={[
+              styles.inputStyle,
+              !!numberOfLines && styles.multilineInputStyle,
+            ]}
+            multiline={!!numberOfLines}
+            numberOfLines={numberOfLines}
           />
         )
       case 'select':
@@ -66,7 +77,7 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
               style={styles.selectButton}
             >
               <ThemedText style={styles.labelText}>
-                {field.value || placeholder}
+                {selectedLabel || placeholder}
               </ThemedText>
               <ArrowDownIcon />
             </TouchableOpacity>
@@ -83,7 +94,8 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
                       <TouchableOpacity
                         key={option.value}
                         onPress={() => {
-                          field.onChange(option.value)
+                          setSelectedLabel(option.label) // Muestra el label en la interfaz
+                          field.onChange(option.value) // Guarda el value en la base de datos
                           setModalVisible(false)
                         }}
                         style={styles.optionItem}
@@ -129,6 +141,10 @@ const styles = StyleSheet.create({
   inputStyle: {
     color: '#393F42',
     fontSize: 14,
+  },
+  multilineInputStyle: {
+    textAlignVertical: 'top',
+    paddingTop: 10,
   },
   selectButton: {
     borderWidth: 1,
