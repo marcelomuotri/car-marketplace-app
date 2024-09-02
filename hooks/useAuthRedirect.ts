@@ -8,7 +8,7 @@ const useAuthRedirect = () => {
 
   useEffect(() => {
     if (user) {
-      router.push('/')
+      router.replace('/')
     }
   }, [user])
 }

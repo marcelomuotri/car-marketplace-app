@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 //import { signIn } from "../firebase/api/auth_sign_in";
@@ -18,6 +19,7 @@ import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import ThemedTextInput from '../components/ThemedTextInput'
 import Loader from '@/components/Loader'
+import ThemedButton from '@/components/ThemedButton'
 
 interface LoginFormFieldsProps {
   email: string | undefined
@@ -52,17 +54,23 @@ export default function LoginForm() {
     console.log(errors)
   }, [errors])
 
+  if (loading) return <Loader />
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <Text style={styles.title}>2y4Race</Text>
+        <Image
+          source={require('../assets/images/coche2.jpg')}
+          style={{
+            marginTop: 20,
+            width: 350,
+            height: 150,
+            justifyContent: 'center',
+            alignSelf: 'center',
+            borderRadius: 6,
+          }}
+        />
         <KeyboardAwareScrollView>
-          <View style={styles.header}>
-            <View style={styles.headerBack}></View>
-            <Text style={styles.title}>{t('Welcome to React')}</Text>
-            <Text style={styles.subtitle}>
-              Fill in the fields below to get started with your new account.
-            </Text>
-          </View>
           <View style={styles.form}>
             <View style={styles.input}>
               <Controller
@@ -77,7 +85,7 @@ export default function LoginForm() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <ThemedTextInput
-                    label="Email Address"
+                    label="Email"
                     onChangeText={onChange}
                     value={value}
                     placeholder="email"
@@ -96,7 +104,7 @@ export default function LoginForm() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <ThemedTextInput
-                    label="Password"
+                    label="Contraseña"
                     onChangeText={onChange}
                     value={value}
                     placeholder="password"
@@ -107,12 +115,12 @@ export default function LoginForm() {
               />
             </View>
             <View style={styles.formAction}>
-              <TouchableOpacity onPress={handleSubmit(handleLogin)}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Login</Text>
-                </View>
-              </TouchableOpacity>
-              {loading && <Loader />}
+              <ThemedButton title="Login" onPress={handleSubmit(handleLogin)} />
+              <ThemedButton
+                title="Login con Google"
+                onPress={handleSubmit(handleLogin)}
+              />
+
               {error && <Text>Nombre de usuario o contraseña incorrectos</Text>}
             </View>
           </View>
@@ -135,17 +143,17 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 15,
     paddingVertical: 24,
     paddingHorizontal: 0,
     flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
   },
   title: {
     fontSize: 31,
     fontWeight: '700',
     color: '#1D2A32',
     marginBottom: 6,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 15,
@@ -159,13 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     paddingHorizontal: 24,
   },
-  headerBack: {
-    padding: 8,
-    paddingTop: 0,
-    position: 'relative',
-    marginLeft: -16,
-    marginBottom: 6,
-  },
+
   /** Form */
   form: {
     marginBottom: 24,
@@ -177,6 +179,7 @@ const styles = StyleSheet.create({
   formAction: {
     marginTop: 4,
     marginBottom: 16,
+    gap: 15,
   },
   formFooter: {
     fontSize: 15,

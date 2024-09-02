@@ -69,6 +69,8 @@ export default function RootLayout() {
             name="productDetails"
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="login-form" options={{ headerShown: false }} />
+          <Stack.Screen name="sign-up-form" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </Provider>

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Linking,
 } from 'react-native'
 import {
   useGetProductById,
@@ -35,6 +34,7 @@ import {
 } from '@/state/api/favoritesApi'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
+import * as Linking from 'expo-linking'
 
 const { width } = Dimensions.get('window')
 
@@ -51,6 +51,8 @@ const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { addNewFavorite } = useAddFavorite()
   const { removeFavorite } = useDeleteFavorite()
+  const url = Linking.useURL()
+  console.log(url)
 
   const { favorite, isLoadingFavorite } = useGetOneFavorite({
     filters: { uid: userData?.uid, productId: id },
@@ -89,13 +91,12 @@ const Index = () => {
   }
 
   const shareToWhatsApp = () => {
-    const productUrl = `exp://`
-    const message = `${product?.title}\n\nEcha un vistazo a esta publicación en ${productUrl}`
-    const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
-
-    Linking.openURL(whatsappUrl).catch(() => {
-      alert('Asegúrate de que WhatsApp esté instalado en tu dispositivo')
-    })
+    // const productUrl = `exp://`
+    // const message = `${product?.title}\n\nEcha un vistazo a esta publicación en ${productUrl}`
+    // const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
+    // Linking.openURL(whatsappUrl).catch(() => {
+    //   alert('Asegúrate de que WhatsApp esté instalado en tu dispositivo')
+    // })
   }
 
   const onAddToFavorites = () => {

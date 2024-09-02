@@ -5,6 +5,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Image,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useAuthService } from '@/state/services/authService'
@@ -14,6 +15,7 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import Loader from '@/components/Loader'
+import ThemedButton from '@/components/ThemedButton'
 
 interface SignUpFieldsForm {
   name: string
@@ -41,31 +43,31 @@ export default function SignUpForm() {
   useAuthRedirect()
 
   const handleCreateAccount: SubmitHandler<SignUpFieldsForm> = async (data) => {
-    console.log(data)
-    const { name, surname, email, password, confirmPassword } = data
-    //const { name, surname, email, password, confirmPassword } = form
+    const { email, password, confirmPassword } = data
     if (password !== confirmPassword) {
-      return alert('Passwords do not match')
+      return alert('Las contraseñas no coinciden')
     }
     createUser({ email, password })
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <Text style={styles.title}>2y4Race</Text>
+        <Image
+          source={require('../assets/images/coche2.jpg')}
+          style={{
+            marginTop: 10,
+            width: 350,
+            height: 150,
+            justifyContent: 'center',
+            alignSelf: 'center',
+            borderRadius: 6,
+          }}
+        />
         <KeyboardAwareScrollView>
-          <View style={styles.header}>
-            <View style={styles.headerBack}></View>
-
-            <Text style={styles.title}>Let's Get Started!</Text>
-
-            <Text style={styles.subtitle}>
-              Fill in the fields below to get started with your new account.
-            </Text>
-          </View>
           <View style={styles.form}>
             <View style={styles.input}></View>
-
             <View style={styles.input}>
               <Controller
                 name="email"
@@ -79,7 +81,7 @@ export default function SignUpForm() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <ThemedTextInput
-                    label="Email Address"
+                    label="Email"
                     onChangeText={onChange}
                     value={value}
                     placeholder="Email"
@@ -98,7 +100,7 @@ export default function SignUpForm() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <ThemedTextInput
-                    label="Password"
+                    label="Contraseña"
                     onChangeText={onChange}
                     value={value}
                     placeholder="Password"
@@ -119,7 +121,7 @@ export default function SignUpForm() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <ThemedTextInput
-                    label="Password"
+                    label="Repetir contraseña"
                     onChangeText={onChange}
                     value={value}
                     placeholder="Confirm password"
@@ -130,11 +132,10 @@ export default function SignUpForm() {
               />
             </View>
             <View style={styles.formAction}>
-              <TouchableOpacity onPress={handleSubmit(handleCreateAccount)}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Get Started</Text>
-                </View>
-              </TouchableOpacity>
+              <ThemedButton
+                title="Crear cuenta"
+                onPress={handleSubmit(handleCreateAccount)}
+              />
             </View>
           </View>
         </KeyboardAwareScrollView>
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1D2A32',
     marginBottom: 6,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 15,
@@ -178,16 +180,10 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    marginBottom: 24,
+    marginBottom: 12,
     paddingHorizontal: 24,
   },
-  headerBack: {
-    padding: 8,
-    paddingTop: 0,
-    position: 'relative',
-    marginLeft: -16,
-    marginBottom: 6,
-  },
+
   /** Form */
   form: {
     marginBottom: 24,
