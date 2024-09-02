@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import React from 'react'
 import {
+  Alert,
   View,
   StyleSheet,
   TouchableOpacity,
@@ -51,8 +52,6 @@ const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { addNewFavorite } = useAddFavorite()
   const { removeFavorite } = useDeleteFavorite()
-  const url = Linking.useURL()
-  console.log(url)
 
   const { favorite, isLoadingFavorite } = useGetOneFavorite({
     filters: { uid: userData?.uid, productId: id },
@@ -91,12 +90,15 @@ const Index = () => {
   }
 
   const shareToWhatsApp = () => {
-    // const productUrl = `exp://`
-    // const message = `${product?.title}\n\nEcha un vistazo a esta publicación en ${productUrl}`
-    // const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
-    // Linking.openURL(whatsappUrl).catch(() => {
-    //   alert('Asegúrate de que WhatsApp esté instalado en tu dispositivo')
-    // })
+    const productUrl = Linking.createURL(`/product/${id}`, {
+      scheme: 'yourapp',
+    })
+    const message = `${product?.title}\n\n${t('checkOutThisPost')} ${productUrl}`
+    const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
+
+    Linking.openURL(whatsappUrl).catch(() => {
+      Alert.alert(t('error'), t('makeSureWhatsAppInstalled'))
+    })
   }
 
   const onAddToFavorites = () => {
