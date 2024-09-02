@@ -12,13 +12,12 @@ import BottomSuccessDrawer from '@/components/BottomSuccessDrawer/BottomSuccessD
 
 const Support = () => {
   const { t } = useTranslation()
-  const { control, handleSubmit } = useForm<any>({})
+  const { control, handleSubmit, reset } = useForm<any>({})
   const { addNewSupport, isLoading } = useAddSupport()
   const [showSuccessDrawer, setShowSuccessDrawer] = useState(false)
   const supportOptions = [
     { value: 'Publicaciones', label: t('publicationsProblem') },
     { value: 'Perfil', label: t('profileProblem') },
-    { value: 'Cuenta', label: t('verificationProblem') },
     { value: 'Otros', label: t('others') },
   ]
 
@@ -26,6 +25,7 @@ const Support = () => {
     const result = await addNewSupport(data)
     if (result.data) {
       setShowSuccessDrawer(true)
+      reset()
     }
   }
 
@@ -43,30 +43,36 @@ const Support = () => {
         subTitle="Pronto alguien del equipo te va a responder via email"
       />
       <View style={styles.supportContainer}>
-        <ThemedText type="title">Consultas</ThemedText>
-        <ThemedText style={{ color: '#757575' }}>
-          Utilizá este formulario para contactarte con nosotros por cualquier
-          duda o inconveniente con la aplicación
-        </ThemedText>
-        <ThemedInput
-          name="subject"
-          control={control}
-          label="holi"
-          type="select"
-          options={supportOptions}
-          placeholder="Seleccionar"
-        ></ThemedInput>
-        <ThemedInput
-          name="desctiption"
-          type="text"
-          numberOfLines={4}
-          label="descripcion"
-          control={control}
-        />
-        <ThemedButton
-          title="Guardar"
-          onPress={handleSubmit(onCreateSupportQuery)}
-        />
+        <View style={styles.formContainer}>
+          <View>
+            <ThemedText type="title">Consultas</ThemedText>
+            <ThemedText style={{ color: '#757575' }}>
+              Utilizá este formulario para contactarte con nosotros por
+              cualquier duda o inconveniente con la aplicación
+            </ThemedText>
+          </View>
+          <ThemedInput
+            name="subject"
+            control={control}
+            label="Motivo de la consulta"
+            type="select"
+            options={supportOptions}
+            placeholder="Seleccionar"
+          ></ThemedInput>
+          <ThemedInput
+            name="desctiption"
+            type="text"
+            numberOfLines={4}
+            label="Descripción"
+            control={control}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <ThemedButton
+            title="Guardar"
+            onPress={handleSubmit(onCreateSupportQuery)}
+          />
+        </View>
       </View>
     </View>
   )
@@ -80,6 +86,15 @@ const styles = StyleSheet.create({
   supportContainer: {
     paddingHorizontal: 25,
     paddingVertical: 15,
+    flexDirection: 'column',
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  formContainer: {
+    gap: 24,
+  },
+  buttonContainer: {
+    justifyContent: 'flex-end',
   },
 })
 
