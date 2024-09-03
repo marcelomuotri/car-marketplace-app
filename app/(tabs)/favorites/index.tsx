@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Image } from 'react-native'
+import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
 import { useDeleteFavorite, useGetAllFavorites } from '@/state/api/favoritesApi'
 import { useGetProductsByIds } from '@/state/api/productApi'
 import { useSelector } from 'react-redux'
@@ -10,6 +10,8 @@ import { ListItem, Button } from '@rneui/themed'
 import TrashIcon from '@/assets/icons/TrashIcon'
 import { ThemedText } from '@/components/ThemedText'
 import { getCurrency } from '@/components/utils/getCurrency'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useRouter } from 'expo-router'
 
 export type ProductSummary = Pick<
   Product,
@@ -18,6 +20,7 @@ export type ProductSummary = Pick<
 
 const FavoritesScreen = () => {
   const { userData } = useSelector((state: RootState) => state.auth)
+  const router = useRouter()
 
   const { favorites, isLoading: isLoadingFavorites } = useGetAllFavorites({
     populate: [],
@@ -47,8 +50,12 @@ const FavoritesScreen = () => {
   )
     return <Text>No hay favoritos para mostrar</Text>
 
-  const onDeleteFavorite = (id) => {
+  const onDeleteFavorite = (id: string) => {
     removeFavorite(id)
+  }
+
+  const handlePress = (id: string) => {
+    router.push({ pathname: 'productDetails/[id]', params: { id: id } })
   }
 
   return (
@@ -57,6 +64,7 @@ const FavoritesScreen = () => {
         return (
           <ListItem.Swipeable
             key={product.title}
+            onPress={() => handlePress(product.id)}
             rightContent={() => (
               <Button
                 onPress={() => onDeleteFavorite(product.favoriteId)}

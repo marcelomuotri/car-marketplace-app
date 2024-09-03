@@ -90,9 +90,15 @@ const Index = () => {
   }
 
   const shareToWhatsApp = () => {
-    const productUrl = Linking.createURL(`/product/${id}`, {
-      scheme: 'yourapp',
+    console.log(id)
+
+    // Inserta el valor real de 'id' en la URL
+    const productUrl = Linking.createURL(`productDetails/${id}`, {
+      scheme: 'myapp', // Asegúrate de que 'myapp' es el esquema configurado en tu app.json
     })
+
+    console.log(productUrl)
+
     const message = `${product?.title}\n\n${t('checkOutThisPost')} ${productUrl}`
     const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
 
