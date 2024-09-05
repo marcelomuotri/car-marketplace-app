@@ -16,10 +16,12 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import Loader from '@/components/Loader'
 import ThemedButton from '@/components/ThemedButton'
+import { ThemedText } from '@/components/ThemedText'
+import { useTranslation } from 'react-i18next'
+import LoginButton from '@/components/Login/LoginButton'
+import Back from '@/components/Back'
 
 interface SignUpFieldsForm {
-  name: string
-  surname: string
   email: string
   password: string
   confirmPassword: string
@@ -31,15 +33,10 @@ export default function SignUpForm() {
     control,
     formState: { errors },
   } = useForm<SignUpFieldsForm>()
+  const { t } = useTranslation()
   const { createUser } = useAuthService()
   const { loading } = useSelector((state: RootState) => state.auth)
-  // const [form, setForm] = useState({
-  //   name: '',
-  //   surname: '',
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  // })
+
   useAuthRedirect()
 
   const handleCreateAccount: SubmitHandler<SignUpFieldsForm> = async (data) => {
@@ -49,13 +46,16 @@ export default function SignUpForm() {
     }
     createUser({ email, password })
   }
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text style={styles.title}>2y4Race</Text>
+        <Back />
         <Image
-          source={require('../assets/images/coche2.jpg')}
+          source={require('../assets/images/logo.jpeg')}
           style={{
             marginTop: 10,
             width: 350,
@@ -65,9 +65,11 @@ export default function SignUpForm() {
             borderRadius: 6,
           }}
         />
+        <ThemedText style={styles.title} type="defaultSemiBold">
+          {t('registerAnAccount')}
+        </ThemedText>
         <KeyboardAwareScrollView>
           <View style={styles.form}>
-            <View style={styles.input}></View>
             <View style={styles.input}>
               <Controller
                 name="email"
@@ -84,7 +86,7 @@ export default function SignUpForm() {
                     label="Email"
                     onChangeText={onChange}
                     value={value}
-                    placeholder="Email"
+                    placeholder=""
                     error={errors.email}
                   />
                 )}
@@ -103,14 +105,13 @@ export default function SignUpForm() {
                     label="Contraseña"
                     onChangeText={onChange}
                     value={value}
-                    placeholder="Password"
+                    placeholder=""
                     secureTextEntry
                     error={errors.password}
                   />
                 )}
               />
             </View>
-
             <View style={styles.input}>
               <Controller
                 name="confirmPassword"
@@ -124,7 +125,7 @@ export default function SignUpForm() {
                     label="Repetir contraseña"
                     onChangeText={onChange}
                     value={value}
-                    placeholder="Confirm password"
+                    placeholder=""
                     secureTextEntry
                     error={errors.confirmPassword}
                   />
@@ -132,25 +133,13 @@ export default function SignUpForm() {
               />
             </View>
             <View style={styles.formAction}>
-              <ThemedButton
-                title="Crear cuenta"
+              <LoginButton
+                title={'Registrar cuenta'}
                 onPress={handleSubmit(handleCreateAccount)}
               />
             </View>
           </View>
         </KeyboardAwareScrollView>
-        <TouchableOpacity
-          onPress={() => {
-            // handle link
-          }}
-          style={{ marginTop: 'auto' }}
-        >
-          <Text style={styles.formFooter}>
-            Already have an account?{' '}
-            <Text style={{ textDecorationLine: 'underline' }}>Sign in</Text>
-          </Text>
-        </TouchableOpacity>
-        {loading && <Loader />}
       </View>
     </SafeAreaView>
   )
@@ -159,41 +148,21 @@ export default function SignUpForm() {
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 24,
-    paddingHorizontal: 0,
     flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
+    backgroundColor: '#3D9970',
+    paddingHorizontal: 24,
   },
   title: {
-    fontSize: 31,
-    fontWeight: '700',
-    color: '#1D2A32',
-    marginBottom: 6,
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#FFF',
+    marginBottom: 15,
     textAlign: 'center',
   },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#929292',
-  },
-  /** Header */
-  header: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    marginBottom: 12,
-    paddingHorizontal: 24,
-  },
-
-  /** Form */
   form: {
-    marginBottom: 24,
-    paddingHorizontal: 24,
     flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
   },
   formAction: {
-    marginTop: 4,
     marginBottom: 16,
   },
   formFooter: {
@@ -203,44 +172,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.15,
   },
-  /** Input */
   input: {
-    marginBottom: 16,
+    marginBottom: 8,
   },
   inputLabel: {
     fontSize: 17,
     fontWeight: '600',
     color: '#222',
     marginBottom: 8,
-  },
-  inputControl: {
-    height: 50,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#222',
-    borderWidth: 1,
-    borderColor: '#C9D3DB',
-    borderStyle: 'solid',
-  },
-  /** Button */
-  btn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    backgroundColor: '#075eec',
-    borderColor: '#075eec',
-  },
-  btnText: {
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: '600',
-    color: '#fff',
   },
 })

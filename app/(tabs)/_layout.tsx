@@ -25,7 +25,6 @@ export default function AppLayout() {
 
   if (loading) return <Loader />
 
-  // This layout can be deferred because it's not the root layout.
   return (
     <Tabs
       screenOptions={{
@@ -34,10 +33,12 @@ export default function AppLayout() {
         headerShown: false,
         tabBarStyle: Platform.select({
           ios: {
+            backgroundColor: 'white',
             height: 75,
             paddingBottom: 10,
           },
           android: {
+            backgroundColor: 'white',
             height: 60,
           },
         }),

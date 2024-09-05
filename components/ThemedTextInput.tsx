@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome' // Asegúrate de instalar react-native-vector-icons
+import { ThemedText } from './ThemedText'
 
 interface CustomTextInputProps {
   label: string
@@ -42,7 +43,11 @@ const CustomTextInput = ({
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <ThemedText style={styles.label} type="defaultSemiBold">
+          {label}
+        </ThemedText>
+      )}
       <View style={styles.inputContainer}>
         {iconName && (
           <Icon name={iconName} size={20} color="#C9D3DB" style={styles.icon} />
@@ -72,7 +77,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 17,
-    fontWeight: '600',
     color: '#FFF',
     marginBottom: 8,
   },
@@ -80,13 +84,13 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    height: 50,
+    height: 40,
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
-    borderRadius: 12,
-    fontSize: 15,
+    borderRadius: 4,
+    fontSize: 14,
     fontWeight: '500',
-    borderWidth: 3,
+    borderWidth: 1.5,
     borderColor: '#FFF',
     borderStyle: 'solid',
     color: '#FFF',

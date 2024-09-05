@@ -26,7 +26,6 @@ export const useAuthService = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log('holis')
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const docRef = doc(db, 'users', firebaseUser.uid)

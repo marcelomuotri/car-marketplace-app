@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   DarkTheme,
   DefaultTheme,
@@ -20,7 +21,7 @@ import { Provider } from 'react-redux'
 import es from '../i18n/es.json'
 import 'intl-pluralrules'
 import { Stack } from 'expo-router/stack'
-import * as Linking from 'expo-linking'
+import { usePathname, useRouter } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -44,12 +45,20 @@ i18n.use(initReactI18next).init({
 })
 
 export default function RootLayout() {
+  const pathname = usePathname()
+  const router = useRouter()
   const colorScheme = useColorScheme()
   const [loaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_700Bold,
   })
+  // React.useEffect(() => {
+  //   if (pathname === '/oauthredirect') {
+  //     // Redirigir directamente a la ruta principal "/"
+  //     router.replace('/')
+  //   }
+  // }, [pathname])
 
   useEffect(() => {
     if (loaded) {
@@ -72,6 +81,11 @@ export default function RootLayout() {
           />
           <Stack.Screen name="login-form" options={{ headerShown: false }} />
           <Stack.Screen name="sign-up-form" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="recover-password"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="oauthredirect" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </Provider>

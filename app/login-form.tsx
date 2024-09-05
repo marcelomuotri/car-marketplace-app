@@ -4,12 +4,11 @@ import {
   SafeAreaView,
   View,
   Text,
-  TouchableOpacity,
   Alert,
   Image,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { RootState } from '@/state/store'
 import { useSelector } from 'react-redux'
 import { useAuthService } from '@/state/services/authService'
@@ -18,17 +17,12 @@ import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import ThemedTextInput from '../components/ThemedTextInput'
 import Loader from '@/components/Loader'
-import ThemedButton from '@/components/ThemedButton'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithCredential,
-} from 'firebase/auth'
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
 import { auth } from '@/firebaseConfig'
-import * as Linking from 'expo-linking'
-import Logo from '@/assets/icons/Logo'
+import LoginButton from '@/components/Login/LoginButton'
+import { ThemedText } from '@/components/ThemedText'
 
 interface LoginFormFieldsProps {
   email: string | undefined
@@ -50,14 +44,15 @@ export default function LoginForm() {
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
       '33038217968-n3sj03vqfmqacvatp7op14nvgej1em7p.apps.googleusercontent.com',
+    iosClientId:
+      '33038217968-n3sj03vqfmqacvatp7op14nvgej1em7p.apps.googleusercontent.com',
   })
 
   useEffect(() => {
     const signInWithGoogle = async () => {
       try {
-        const user = auth.currentUser // Verifica si ya hay un usuario autenticado
+        const user = auth.currentUser
 
-        // Solo procesar la autenticación de Google si no hay usuario autenticado y la respuesta es exitosa
         if (
           !user &&
           response?.type === 'success' &&
@@ -96,11 +91,10 @@ export default function LoginForm() {
       const { email, password } = data
       await loginUser({ email, password })
 
-      // Redirigir a la página principal después del inicio de sesión exitoso
-      router.push('/home') // Cambia '/home' por la ruta que quieras
+      router.replace('/')
     } catch (error) {
       console.error('Login error:', error)
-      Alert.alert('Login', 'Nombre de usuario o contraseña incorrectos')
+      Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
     }
   }
 
@@ -110,88 +104,114 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (error) {
-      Alert.alert('Login', 'Nombre de usuario o contraseña incorrectos')
+      Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
     }
   }, [error])
 
   if (loading) return <Loader />
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Image
-          source={require('../assets/images/logo.jpeg')}
-          style={styles.image}
-        />
-        <Text style={styles.title}>Inicia Sesión o Registrate</Text>
-        <KeyboardAwareScrollView>
-          <View style={styles.form}>
-            <View style={styles.input}>
-              <Controller
-                name="email"
-                control={control}
-                rules={{
-                  required: true,
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                    message: 'invalid email address',
-                  },
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <ThemedTextInput
-                    label="Email"
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder="ejemplo@ejemplo.com"
-                    error={errors.email}
-                  />
-                )}
-              />
-            </View>
-            <View style={styles.input}>
-              <Controller
-                name="password"
-                control={control}
-                rules={{
-                  required: true,
-                  minLength: 6,
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <ThemedTextInput
-                    label="Contraseña"
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder="password"
-                    secureTextEntry
-                    error={errors.password}
-                  />
-                )}
-              />
-            </View>
-            <View style={styles.formAction}>
-              <ThemedButton title="Login" onPress={handleSubmit(handleLogin)} />
-              <ThemedButton
-                title="Login con Google"
-                onPress={signInWithGoogle}
-              />
-              {error && <Text>Nombre de usuario o contraseña incorrectos</Text>}
-            </View>
+    <View style={styles.container}>
+      <Image
+        source={require('../assets/images/logo.jpeg')}
+        style={styles.image}
+      />
+      <ThemedText style={styles.title} type="defaultSemiBold">
+        {t('loginTitle')}
+      </ThemedText>
+      <KeyboardAwareScrollView>
+        <View style={styles.form}>
+          <View style={styles.input}>
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: true,
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: t('invalidEmail'),
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <ThemedTextInput
+                  label={t('emailLabel')}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder=""
+                  error={errors.email}
+                />
+              )}
+            />
           </View>
-        </KeyboardAwareScrollView>
-        <TouchableOpacity
-          onPress={() => {
-            router.push('/sign-up-form')
-          }}
-          style={{ marginTop: 'auto' }}
-        >
-          <Text style={styles.formFooter}>
-            ¿Ya tienes una cuenta?{' '}
-            <Text style={{ textDecorationLine: 'underline' }}>
-              Iniciar sesión
+          <View style={styles.input}>
+            <Controller
+              name="password"
+              control={control}
+              rules={{
+                required: true,
+                minLength: 6,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <ThemedTextInput
+                  label={t('passwordLabel')}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder=""
+                  secureTextEntry
+                  error={errors.password}
+                />
+              )}
+            />
+          </View>
+          {error && (
+            <Text style={{ marginBottom: 5, color: 'red' }}>
+              {t('loginErrorMessage')}
             </Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          )}
+          <LoginButton
+            title={t('loginButton')}
+            onPress={handleSubmit(handleLogin)}
+          />
+          <Link href={'/recover-password'} asChild>
+            <ThemedText style={styles.forgotPassword} type="defaultSemiBold">
+              {t('forgotPasswordLink')}
+            </ThemedText>
+          </Link>
+          <View
+            style={{
+              marginVertical: 20,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 15,
+            }}
+          >
+            <View
+              style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+            ></View>
+            <View>
+              <Text style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}>
+                {t('or')}
+              </Text>
+            </View>
+            <View
+              style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+            ></View>
+          </View>
+          <LoginButton
+            googleIcon
+            title={t('googleLoginButton')}
+            onPress={signInWithGoogle}
+          />
+          <ThemedText style={styles.formFooter} type="defaultSemiBold">
+            {t('noAccount')}{' '}
+            <Link href={'/sign-up-form'} asChild>
+              <Text style={{ textDecorationLine: 'underline' }}>
+                {t('signUpLink')}
+              </Text>
+            </Link>
+          </ThemedText>
+        </View>
+      </KeyboardAwareScrollView>
+    </View>
   )
 }
 
@@ -206,7 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '600',
     color: '#FFF',
-    marginBottom: 6,
+    marginBottom: 15,
     textAlign: 'center',
   },
   image: {
@@ -227,13 +247,20 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   formFooter: {
+    marginTop: 40,
     fontSize: 15,
     fontWeight: '600',
-    color: '#222',
     textAlign: 'center',
     letterSpacing: 0.15,
+    color: '#FFF',
   },
   input: {
     marginBottom: 8,
+  },
+  forgotPassword: {
+    marginVertical: 15,
+    color: '#FFF',
+    textDecorationLine: 'underline',
+    fontWeight: '600',
   },
 })
