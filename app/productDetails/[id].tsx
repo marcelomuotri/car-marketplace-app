@@ -93,18 +93,15 @@ const Index = () => {
     console.log(id)
 
     // Inserta el valor real de 'id' en la URL
-    const productUrl = Linking.createURL(`productDetails/${id}`, {
-      scheme: 'myapp', // Asegúrate de que 'myapp' es el esquema configurado en tu app.json
-    })
+    const productUrl = `https://app.2y4race.com/productDetails/${id}`
 
     console.log(productUrl)
 
-    const message = `${product?.title}\n\n${t('checkOutThisPost')} ${productUrl}`
+    const message = `${productUrl}`
     const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
+    console.log(whatsappUrl)
 
-    Linking.openURL(whatsappUrl).catch(() => {
-      Alert.alert(t('error'), t('makeSureWhatsAppInstalled'))
-    })
+    Linking.openURL(whatsappUrl)
   }
 
   const onAddToFavorites = () => {

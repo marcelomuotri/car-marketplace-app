@@ -44,8 +44,8 @@ const FavoritesScreen = () => {
   if (isLoadingFavorites || isLoadingProducts) return <Loader />
 
   if (
-    products.length === 0 &&
-    favorites.length === 0 &&
+    products?.length === 0 &&
+    favorites?.length === 0 &&
     productsWithFavoriteId?.length === 0
   )
     return <Text>No hay favoritos para mostrar</Text>

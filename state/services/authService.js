@@ -16,11 +16,17 @@ import {
 import { auth, db } from '../../firebaseConfig'
 import { createUserPayload } from '@/models/authModel'
 import { onAuthStateChanged, updatePassword } from 'firebase/auth'
+import {
+  convertIsoStringToTimestamp,
+  convertTimestampToIsoString,
+} from '../api'
+import * as WebBrowser from 'expo-web-browser'
 
 export const useAuthService = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    console.log('holis')
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const docRef = doc(db, 'users', firebaseUser.uid)
@@ -29,7 +35,11 @@ export const useAuthService = () => {
           userData: docSnap.data(),
           user: firebaseUser.email,
         }
-        dispatch(loginSuccess(payload))
+        const parsePayloadData = {
+          userData: convertTimestampToIsoString(payload.userData),
+          user: firebaseUser.email,
+        }
+        dispatch(loginSuccess(parsePayloadData))
       } else {
         dispatch(loginFailure())
       }
@@ -84,6 +94,17 @@ export const useAuthService = () => {
     }
   }
 
+  const createUserFromGoogle = async (result) => {
+    //TODO
+    const isNewUser = result._tokenResponse.isNewUser
+    if (isNewUser) {
+      const userPayload = createUserPayload(result.user)
+      const userPayloadForFirebase = convertIsoStringToTimestamp(userPayload)
+      saveUserToFirestore(userPayloadForFirebase, result.user.uid)
+      //aca si tengo problemas puedo volver a ponerle el uid al userData para ver si se arregla
+    }
+  }
+
   const saveUserToFirestore = async (userPayload, uid) => {
     try {
       const userDocRef = doc(db, 'users', uid)
@@ -96,6 +117,7 @@ export const useAuthService = () => {
   const logoutUser = async () => {
     try {
       await signOut(auth)
+      WebBrowser.dismissBrowser()
       dispatch(logoutSuccess())
     } catch (error) {
       //TODO logout failure
@@ -127,5 +149,11 @@ export const useAuthService = () => {
     }
   }
 
-  return { loginUser, logoutUser, createUser, changePassword }
+  return {
+    loginUser,
+    logoutUser,
+    createUser,
+    changePassword,
+    createUserFromGoogle,
+  }
 }

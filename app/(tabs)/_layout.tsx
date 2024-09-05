@@ -7,6 +7,7 @@ import { useThemeColor } from '@/hooks/useThemeColor'
 import SupportIcon from '@/assets/icons/SupportIcon'
 import AccountIcon from '@/assets/icons/AccountIcon'
 import { Platform } from 'react-native'
+import Loader from '@/components/Loader'
 
 export default function AppLayout() {
   const tabBarInactiveTintColor = useThemeColor({}, 'tabIconDefault')
@@ -21,6 +22,8 @@ export default function AppLayout() {
     // in the headless Node process that the pages are rendered in.
     return <Redirect href="/login-form" />
   }
+
+  if (loading) return <Loader />
 
   // This layout can be deferred because it's not the root layout.
   return (

@@ -38,3 +38,6 @@ const auth = initializeAuth(app, {
 })
 
 export { auth, db }
+
+//android client id
+//33038217968-n3sj03vqfmqacvatp7op14nvgej1em7p.apps.googleusercontent.com

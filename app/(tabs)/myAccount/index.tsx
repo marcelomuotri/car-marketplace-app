@@ -27,12 +27,12 @@ const MyAccount = () => {
 
   const { control, handleSubmit } = useForm<BuyerProfile>({
     defaultValues: {
-      name: userData.name,
-      surname: userData.surname,
-      phoneNumber: userData.phoneNumber,
-      address: userData.address,
-      city: userData.city,
-      state: userData.state,
+      name: userData?.name,
+      surname: userData?.surname,
+      phoneNumber: userData?.phoneNumber,
+      address: userData?.address,
+      city: userData?.city,
+      state: userData?.state,
     },
   })
 
@@ -88,7 +88,7 @@ const MyAccount = () => {
           <View>
             <ThemedText type="title">{t('email')}</ThemedText>
             <ThemedText style={styles.email} type="title">
-              {userData.userEmail}
+              {userData?.userEmail}
             </ThemedText>
           </View>
           <View>

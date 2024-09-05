@@ -54,6 +54,7 @@ const CustomTextInput = ({
           value={value}
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
+          placeholderTextColor={'white'}
         />
       </View>
       {error && (
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#222',
+    color: '#FFF',
     marginBottom: 8,
   },
   inputContainer: {
@@ -80,15 +81,15 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,
     fontWeight: '500',
-    color: '#222',
-    borderWidth: 1,
-    borderColor: '#C9D3DB',
+    borderWidth: 3,
+    borderColor: '#FFF',
     borderStyle: 'solid',
+    color: '#FFF',
   },
   icon: {
     position: 'absolute',

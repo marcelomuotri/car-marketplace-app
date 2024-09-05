@@ -14,7 +14,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 
-const convertIsoStringToTimestamp = (data) => {
+export const convertIsoStringToTimestamp = (data) => {
   const convertedData = {}
 
   for (const key in data) {
@@ -34,7 +34,7 @@ const convertIsoStringToTimestamp = (data) => {
   return convertedData
 }
 
-const convertTimestampToIsoString = (data) => {
+export const convertTimestampToIsoString = (data) => {
   const convertedData = {}
 
   for (const key in data) {

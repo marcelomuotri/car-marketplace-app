@@ -20,6 +20,7 @@ import { Provider } from 'react-redux'
 import es from '../i18n/es.json'
 import 'intl-pluralrules'
 import { Stack } from 'expo-router/stack'
+import * as Linking from 'expo-linking'
 
 SplashScreen.preventAutoHideAsync()
 
