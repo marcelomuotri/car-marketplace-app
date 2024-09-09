@@ -42,10 +42,8 @@ export default function LoginForm() {
   WebBrowser.maybeCompleteAuthSession()
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:
-      '33038217968-n3sj03vqfmqacvatp7op14nvgej1em7p.apps.googleusercontent.com',
-    iosClientId:
-      '33038217968-n3sj03vqfmqacvatp7op14nvgej1em7p.apps.googleusercontent.com',
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
   })
 
   useEffect(() => {
@@ -172,9 +170,7 @@ export default function LoginForm() {
             onPress={handleSubmit(handleLogin)}
           />
           <Link href={'/recover-password'} asChild>
-            <ThemedText style={styles.forgotPassword} type="defaultSemiBold">
-              {t('forgotPasswordLink')}
-            </ThemedText>
+            <Text style={styles.forgotPassword}>{t('forgotPasswordLink')}</Text>
           </Link>
           <View
             style={{

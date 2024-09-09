@@ -22,20 +22,20 @@ export const competitionCategories = [
 export const staticCategories = [
   {
     id: '5',
-    label: 'Piezas de motor',
-    value: 'piezas de motor',
+    label: 'Motores',
+    value: 'motores',
     Icon: <EngineIcon />,
   },
   {
     id: '6',
-    label: 'Piezas de unidad',
-    value: 'piezas de unidad',
+    label: 'Partes',
+    value: 'partes',
     Icon: <UnitPieceIcon />,
   },
   {
     id: '7',
-    label: 'Equipamiento',
-    value: 'equipamiento',
+    label: 'Indumentaria',
+    value: 'indumentaria',
     Icon: <EquipmentIcon />,
   },
   {

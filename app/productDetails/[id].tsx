@@ -13,7 +13,7 @@ import {
   useGetProductById,
   useIncrementProductField,
 } from '@/state/api/productApi'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import Carrousel from '@/components/ProductDetails/Carrousel'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { getCurrency } from '@/components/utils/getCurrency'
@@ -90,8 +90,6 @@ const Index = () => {
   }
 
   const shareToWhatsApp = () => {
-    console.log(id)
-
     // Inserta el valor real de 'id' en la URL
     const productUrl = `https://app.2y4race.com/productDetails/${id}`
 

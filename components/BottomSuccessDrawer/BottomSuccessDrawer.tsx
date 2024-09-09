@@ -4,12 +4,14 @@ import { View, StyleSheet } from 'react-native'
 import SuccessIcon from '@/assets/icons/SuccessIcon'
 import { ThemedText } from '../ThemedText'
 import ThemedButton from '../ThemedButton'
+import ErrorIcon from '@/assets/icons/ErrorIcon'
 
 interface BottomSuccessDrawerProps {
   isVisible: boolean
   handleCloseDrawer: () => void
   title?: string
   subTitle?: string
+  type: string
 }
 
 const BottomSuccessDrawer = ({
@@ -17,11 +19,12 @@ const BottomSuccessDrawer = ({
   handleCloseDrawer,
   title,
   subTitle,
+  type = 'success',
 }: BottomSuccessDrawerProps) => {
   return (
     <BottomSheetDrawer isVisible={isVisible} handleClose={handleCloseDrawer}>
       <View style={styles.container}>
-        <SuccessIcon />
+        {type === 'success' ? <SuccessIcon /> : <ErrorIcon />}
         {title && <ThemedText style={styles.title}>{title}</ThemedText>}
         {subTitle && (
           <ThemedText style={styles.subTitle}>{subTitle}</ThemedText>

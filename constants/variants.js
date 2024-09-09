@@ -6,17 +6,12 @@ export const variants = [
   },
   {
     id: 2,
-    category: ['equipamiento'],
+    category: ['indumentaria'],
     fields: ['condition', 'size', 'homologation', 'competition'],
   },
   {
     id: 3,
-    category: [
-      'piezas de motor',
-      'piezas de unidad',
-      'accesorios',
-      'herramientas',
-    ],
+    category: ['motores', 'partes', 'accesorios', 'herramientas'],
     fields: ['condition', 'competition'],
   },
   {

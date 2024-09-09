@@ -13,16 +13,21 @@ import { ThemedText } from '@/components/ThemedText'
 import FilterButton from '@/components/FilterButton'
 import { useTranslation } from 'react-i18next'
 import { competitionCategories, staticCategories } from '@/constants/Categories'
+import ThemedButton from '@/components/ThemedButton'
 
 const Index: React.FC = () => {
   const { t } = useTranslation()
+
+  // Estado de filtros y visibilidad del modal de filtros
   const [filters, setFilters] = useState({
     competition: 'auto',
     category: null,
     subCategory: null,
   })
+
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
 
+  // Configuración de categorías a mostrar
   const competitionCategoryToShow = competitionCategories.filter(
     (category) => category.value === filters.competition,
   )
@@ -46,25 +51,26 @@ const Index: React.FC = () => {
     productFilters.subCategory = filters.subCategory
   }
 
-  const { products, isLoading } = useGetAllProducts({
+  // Estado para manejar productos cargados y el cursor para la paginación
+  const [cursor, setCursor] = useState(null)
+
+  // Consulta de productos con límite de 2 por llamada
+  const { products, isLoading, error, refetch } = useGetAllProducts({
     populate: ['title', 'price', 'photo1Url', 'currency'],
     filters: productFilters,
+    limitCount: 50,
+    cursor,
   })
 
+  // Obtener categorías
   const { categories, isLoadingCategories } = useGetAllCategories()
 
-  useEffect(() => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      category: null,
-      subCategory: null,
-    }))
-  }, [filters.competition])
-
+  // Alternar visibilidad del modal de filtros
   const toggleModal = () => {
     setIsFilterModalVisible(!isFilterModalVisible)
   }
 
+  // Aplicar los filtros seleccionados
   const applyFilters = (newFilters: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -73,39 +79,50 @@ const Index: React.FC = () => {
     setIsFilterModalVisible(false)
   }
 
+  // Mostrar loader mientras se cargan los productos o las categorías
   if (isLoading || isLoadingCategories || !products || !categories) {
     return <Loader />
   }
 
   return (
     <BasicLayout>
+      {/* Botón para cargar más productos */}
+
       <TopBar
         selectedCompetition={filters.competition}
         setSelectedCompetition={(competition) =>
           setFilters((prev) => ({ ...prev, competition }))
         }
+        setCursor={setCursor}
       />
+
       <ThemedTextInput iconName="home" placeholder="Buscar" />
       <CategoriesList
         filters={filters}
         setFilters={setFilters}
         categoriesToShow={categoriesToShow}
+        setCursor={setCursor}
       />
+
       <View style={styles.header}>
         <ThemedText type="title">{t('featuredProducts')} </ThemedText>
         <View style={styles.buttonContainer}>
           <FilterButton title={t('sort')} />
           <FilterButton
             title={t('filter')}
-            filtersApplied={Object.keys(filters).length - 1} // -1 porque competition no cuenta como filtro
-            onPress={toggleModal}
+            filtersApplied={Object.keys(filters).length - 1}
           />
         </View>
       </View>
+
       <ProductList
+        filters={filters}
+        setCursor={setCursor}
         products={products}
         filtersApplied={Object.keys(filters).length - 1}
+        refetch={refetch}
       />
+
       <FiltersModal
         filters={filters}
         categoriesToShow={categoriesToShow}
@@ -132,20 +149,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     gap: 8,
-  },
-  headerButton: {
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  row: {
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  iosFooter: {
-    height: 20,
-  },
-  androidFooter: {
-    height: 55,
   },
 })
 

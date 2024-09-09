@@ -9,10 +9,11 @@ import { FavoritesUpload } from '@/types'
 const base = 'favorites'
 
 // Hook para obtener productos por usuario
-export const useGetAllFavorites = ({ filters }: any) => {
+export const useGetAllFavorites = ({ filters, populate }: any) => {
   const { data, error, isLoading } = useGetEntitiesQuery({
     collectionPath: base,
     filters: { ...filters },
+    populate: populate,
   })
 
   return {

@@ -7,23 +7,32 @@ import {
   useGetEntitiesQuery,
   useGetEntitiesByIdsQuery,
 } from '../api'
+import { useGetProductsQuery } from '../customApi/customApi'
 import { RootState } from '../store'
 import { ProductUpload } from '@/types'
 
 const base = 'products'
 
 // Hook para obtener productos por usuario
-export const useGetAllProducts = ({ populate, filters }: any) => {
-  const { data, error, isLoading } = useGetEntitiesQuery({
+export const useGetAllProducts = ({
+  populate,
+  filters,
+  limitCount,
+  cursor,
+}: any) => {
+  const { data, error, isLoading, refetch } = useGetProductsQuery({
     collectionPath: base,
     populate,
     filters: { ...filters },
+    limitCount,
+    cursor,
   })
 
   return {
     products: data,
     isLoading,
     error,
+    refetch,
   }
 }
 

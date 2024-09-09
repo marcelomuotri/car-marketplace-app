@@ -12,15 +12,18 @@ import { ThemedText } from '@/components/ThemedText'
 import { getCurrency } from '@/components/utils/getCurrency'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
+import EmptyList from '@/components/emptyList/EmptyList'
+import { useTranslation } from 'react-i18next'
 
 export type ProductSummary = Pick<
   Product,
-  'id' | 'title' | 'price' | 'photo1Url' | 'currency' | 'visits'
+  'id' | 'title' | 'price' | 'photo1Url' | 'currency' | 'visitors'
 >
 
 const FavoritesScreen = () => {
   const { userData } = useSelector((state: RootState) => state.auth)
   const router = useRouter()
+  const { t } = useTranslation()
 
   const { favorites, isLoading: isLoadingFavorites } = useGetAllFavorites({
     populate: [],
@@ -32,9 +35,8 @@ const FavoritesScreen = () => {
     favorites?.map((favorite: Favorites) => favorite.productId) || []
   const { products, isLoading: isLoadingProducts } = useGetProductsByIds({
     ids: productIds,
-    populate: ['title', 'price', 'photo1Url', 'currency', 'visits'],
+    populate: ['title', 'price', 'photo1Url', 'currency', 'visitors'],
   })
-
   const productsWithFavoriteId =
     products?.map((product: ProductSummary) => ({
       ...product,
@@ -43,12 +45,8 @@ const FavoritesScreen = () => {
 
   if (isLoadingFavorites || isLoadingProducts) return <Loader />
 
-  if (
-    products?.length === 0 &&
-    favorites?.length === 0 &&
-    productsWithFavoriteId?.length === 0
-  )
-    return <Text>No hay favoritos para mostrar</Text>
+  if (products?.length === 0 && productsWithFavoriteId?.length === 0)
+    return <EmptyList title={t('emptyFavorites')} />
 
   const onDeleteFavorite = (id: string) => {
     removeFavorite(id)
@@ -80,7 +78,7 @@ const FavoritesScreen = () => {
                   <ThemedText type="defaultSemiBold">
                     {product.title}
                   </ThemedText>
-                  <ThemedText>Visitas: {product.visits}</ThemedText>
+                  <ThemedText>Visitas: {product.visitors}</ThemedText>
                 </View>
                 <ThemedText type="defaultSemiBold">
                   {getCurrency(product.currency)} {product.price}

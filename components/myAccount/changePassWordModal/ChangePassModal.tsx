@@ -39,10 +39,6 @@ const ChangePassModal = ({
   const onHandleChangePassword = async (data: ChangePasswordFields) => {
     const { newPassword, password, repeatPassword } = data
 
-    console.log(newPassword)
-    console.log(password)
-    console.log(repeatPassword)
-
     if (!newPassword || !password || !repeatPassword) {
       setPasswordError(t('completeAllFields'))
       return

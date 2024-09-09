@@ -23,10 +23,10 @@ export const getFieldsToShow = (product: Product, t: Function) => {
     case 'kartings':
     case 'ATVS':
       return fields.filter((field) => [0, 1, 2, 3, 5].includes(field.id))
-    case 'equipamiento':
+    case 'indumentaria':
       return fields.filter((field) => [0, 1, 4, 6, 7].includes(field.id))
-    case 'piezas de motor':
-    case 'piezas de unidad':
+    case 'motores':
+    case 'partes':
     case 'accesorios':
     case 'herramientas':
       return fields.filter((field) => [0, 1, 4].includes(field.id))

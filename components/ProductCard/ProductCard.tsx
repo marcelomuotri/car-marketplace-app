@@ -12,6 +12,7 @@ import { ThemedText } from '../ThemedText'
 import { getCurrency } from '@/components/utils/getCurrency'
 import { useRouter } from 'expo-router'
 import { useIncrementProductField } from '@/state/api/productApi'
+import { formatNumber } from '../utils/formatter'
 
 interface ProductCardProps {
   product: Product
@@ -27,7 +28,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   const handlePress = () => {
     // Incrementar el contador de visitas
-    incrementField(product.id, 'visits')
+    incrementField(product.id, 'visitors')
 
     // Navegar a la pantalla de detalles del producto
     router.push({ pathname: 'productDetails/[id]', params: { id: product.id } })
@@ -44,7 +45,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {product.title}
           </ThemedText>
           <ThemedText type="defaultSemiBold">
-            {currency} {product.price}
+            {currency} {formatNumber(product.price)}
           </ThemedText>
         </View>
       </View>

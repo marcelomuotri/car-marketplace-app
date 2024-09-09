@@ -15,6 +15,7 @@ const Support = () => {
   const { control, handleSubmit, reset } = useForm<any>({})
   const { addNewSupport, isLoading } = useAddSupport()
   const [showSuccessDrawer, setShowSuccessDrawer] = useState(false)
+  const [success, setSuccess] = useState<boolean | null>(null)
   const supportOptions = [
     { value: 'Publicaciones', label: t('publicationsProblem') },
     { value: 'Perfil', label: t('profileProblem') },
@@ -25,6 +26,7 @@ const Support = () => {
     const result = await addNewSupport(data)
     if (result.data) {
       setShowSuccessDrawer(true)
+      setSuccess(true)
       reset()
     }
   }
@@ -33,14 +35,23 @@ const Support = () => {
     setShowSuccessDrawer(false)
   }
 
+  const BottomSucessDrawerProps = {
+    title: success
+      ? 'La consulta se ha enviado correctamente'
+      : 'En este momento, no podemos procesar tu consulta',
+    subTitle: success
+      ? 'Pronto alguien del equipo te va a responder via email'
+      : 'Por favor intenta más tarde.',
+    type: success ? 'success' : 'error',
+  }
+
   if (isLoading) return <Loader />
   return (
     <View style={styles.container}>
       <BottomSuccessDrawer
         handleCloseDrawer={onCloseSuccessDrawer}
         isVisible={showSuccessDrawer}
-        title="La consulta se ha enviado correactamente"
-        subTitle="Pronto alguien del equipo te va a responder via email"
+        {...BottomSucessDrawerProps}
       />
       <View style={styles.supportContainer}>
         <View style={styles.formContainer}>

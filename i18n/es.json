@@ -64,5 +64,8 @@
   "googleLoginButton": "Continuar con Google",
   "noAccount": "¿No tienes cuenta?",
   "signUpLink": "Registrate",
-  "registerAnAccount": "Registrá una cuenta"
+  "registerAnAccount": "Registrá una cuenta",
+  "emptyProductsTitle": "No encontramos productos que coincidan con tu búsqueda",
+  "emptyProductsSubtitle": "Probá ajustando los filtros o intentá con otros términos.",
+  "emptyFavorites": "Todavía no tenés favoritos guardados"
 }

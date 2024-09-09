@@ -12,10 +12,12 @@ interface CategoriesListProps {
 const CategoriesList = ({
   setFilters,
   categoriesToShow,
+  setCursor,
 }: CategoriesListProps) => {
   const { t } = useTranslation()
 
   const onHandleSelectCategory = (id: string) => {
+    setCursor(null)
     setFilters((prevFilters: any) => ({
       ...prevFilters,
       category: id,

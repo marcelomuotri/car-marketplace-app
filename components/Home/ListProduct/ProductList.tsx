@@ -1,22 +1,56 @@
-import React from 'react'
-import { Text, FlatList, StyleSheet, View } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Text, FlatList, StyleSheet, View, RefreshControl } from 'react-native'
 import ProductCard from '../../ProductCard/ProductCard'
 import { Product } from '@/types'
 
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
+import EmptyList from '@/components/emptyList/EmptyList'
 
 interface ListProductProps {
   products: Product[]
   filtersApplied: number
+  refetch: any
+  loadMoreProducts: () => void // Nueva prop para cargar más productos
+  isLoadingMore: boolean
+  setCursor: any
 }
 
-const ProductList = ({ products, filtersApplied }: ListProductProps) => {
+const ProductList = ({
+  products,
+  filtersApplied,
+  refetch,
+  setCursor,
+  filters,
+}: ListProductProps) => {
   const { t } = useTranslation()
+  const [refreshing, setRefreshing] = React.useState(false)
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      await refetch() // Esta es la función que recargará tus productos
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }, [refetch])
+
   if (products?.length === 0) {
-    return <Text>No products available.</Text>
+    return (
+      <View>
+        <EmptyList
+          title={t('emptyProductsTitle')}
+          subTitle={t('emptyProductsSubtitle')}
+        />
+      </View>
+    )
   }
 
+  const onLoadMoreData = () => {
+    setCursor(products[products.length - 1].id)
+  }
   return (
     <View style={styles.container}>
       <FlatList
@@ -29,6 +63,11 @@ const ProductList = ({ products, filtersApplied }: ListProductProps) => {
           ios: <View style={styles.iosFooter} />,
           android: <View style={styles.androidFooter} />,
         })}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onEndReachedThreshold={0.5}
+        onEndReached={onLoadMoreData}
       />
     </View>
   )

@@ -66,7 +66,7 @@ export interface ProductUpload {
   homologation?: boolean | null
   competition?: string[]
   active: boolean
-  visits: number
+  visitors: number
   contacts: number
 }
 

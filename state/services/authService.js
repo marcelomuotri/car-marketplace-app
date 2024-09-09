@@ -19,7 +19,7 @@ import { onAuthStateChanged, updatePassword } from 'firebase/auth'
 import {
   convertIsoStringToTimestamp,
   convertTimestampToIsoString,
-} from '../api'
+} from '../firebaseApi/firebaseApi'
 import * as WebBrowser from 'expo-web-browser'
 
 export const useAuthService = () => {

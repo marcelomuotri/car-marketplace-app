@@ -16,6 +16,7 @@ interface TopBarProps {
 const TopBar = ({
   setSelectedCompetition,
   selectedCompetition,
+  setCursor,
 }: TopBarProps) => {
   const [isVisible, setIsVisible] = useState(false)
   const tint = useThemeColor({}, 'tint')
@@ -23,6 +24,7 @@ const TopBar = ({
   // Aquí están las opciones con label y value
 
   const onHandleOpenSheet = () => {
+    setCursor(null)
     setIsVisible(true)
   }
 

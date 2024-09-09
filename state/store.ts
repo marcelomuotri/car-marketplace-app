@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { authReducer } from './slices/authSlice'
 import { api } from './api'
+import { productsApi } from './customApi/customApi'
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     api: api.reducer,
+    productsApi: productsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -15,7 +17,7 @@ const store = configureStore({
         // O si prefieres ignorar todos los paths:
         ignoredPaths: ['api.mutations'],
       },
-    }).concat(api.middleware),
+    }).concat(api.middleware, productsApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>
