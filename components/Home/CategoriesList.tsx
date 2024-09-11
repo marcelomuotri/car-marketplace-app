@@ -7,6 +7,7 @@ interface CategoriesListProps {
   filters: any
   setFilters: (filters: any) => void
   categoriesToShow: any
+  setCursor: any
 }
 
 const CategoriesList = ({
@@ -56,7 +57,9 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     width: 40,
-    padding: 5,
+    height: 40,
+    justifyContent: 'center', // Centra verticalmente
+    alignItems: 'center',
     backgroundColor: '#E9FFF8',
     borderRadius: 8,
   },

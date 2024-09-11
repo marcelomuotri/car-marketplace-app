@@ -64,16 +64,16 @@ export const useGetProductById = (id: string) => {
 }
 
 export const useGetProductsByIds = ({ ids, populate }: any) => {
-  const { data, error, isLoading } = useGetEntitiesByIdsQuery({
+  const { data, error, isFetching } = useGetEntitiesByIdsQuery({
     collectionPath: base,
     ids: ids,
     populate,
   })
 
   return {
-    products: data,
-    isLoading,
+    products: data ?? null,
     error,
+    isFetching,
   }
 }
 

@@ -8,7 +8,7 @@
     "scheme": "car-marketplace-app",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/logo.jpeg",
+      "image": "./assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#3D9970"
     },
@@ -17,7 +17,7 @@
       "bundleIdentifier": "com.carmarketplace.app"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -34,8 +34,14 @@
               "pathPrefix": "/"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
+      ],
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -63,6 +69,12 @@
       "eas": {
         "projectId": "3df5b46b-ba50-4962-93a8-edd5f329ecbc"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3df5b46b-ba50-4962-93a8-edd5f329ecbc"
     }
   }
 }

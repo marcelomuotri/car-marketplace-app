@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
+import { View, StyleSheet, Image } from 'react-native'
 import { useDeleteFavorite, useGetAllFavorites } from '@/state/api/favoritesApi'
 import { useGetProductsByIds } from '@/state/api/productApi'
 import { useSelector } from 'react-redux'
@@ -10,7 +10,6 @@ import { ListItem, Button } from '@rneui/themed'
 import TrashIcon from '@/assets/icons/TrashIcon'
 import { ThemedText } from '@/components/ThemedText'
 import { getCurrency } from '@/components/utils/getCurrency'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
 import EmptyList from '@/components/emptyList/EmptyList'
 import { useTranslation } from 'react-i18next'
@@ -18,10 +17,12 @@ import { useTranslation } from 'react-i18next'
 export type ProductSummary = Pick<
   Product,
   'id' | 'title' | 'price' | 'photo1Url' | 'currency' | 'visitors'
->
+> & {
+  favoriteId: string
+}
 
 const FavoritesScreen = () => {
-  const { userData } = useSelector((state: RootState) => state.auth)
+  const { userData, loading } = useSelector((state: RootState) => state.auth)
   const router = useRouter()
   const { t } = useTranslation()
 
@@ -33,20 +34,22 @@ const FavoritesScreen = () => {
 
   const productIds =
     favorites?.map((favorite: Favorites) => favorite.productId) || []
-  const { products, isLoading: isLoadingProducts } = useGetProductsByIds({
+  const { products, isFetching } = useGetProductsByIds({
     ids: productIds,
     populate: ['title', 'price', 'photo1Url', 'currency', 'visitors'],
   })
+  console.log(products)
   const productsWithFavoriteId =
     products?.map((product: ProductSummary) => ({
       ...product,
-      favoriteId: favorites.find((fav) => fav.productId === product.id)?.id,
+      favoriteId: favorites.find(
+        (fav: Favorites) => fav.productId === product.id,
+      )?.id,
     })) || []
 
-  if (isLoadingFavorites || isLoadingProducts) return <Loader />
+  if (isLoadingFavorites || isFetching) return <Loader />
 
-  if (products?.length === 0 && productsWithFavoriteId?.length === 0)
-    return <EmptyList title={t('emptyFavorites')} />
+  if (products?.length === 0) return <EmptyList title={t('emptyFavorites')} />
 
   const onDeleteFavorite = (id: string) => {
     removeFavorite(id)
@@ -58,7 +61,7 @@ const FavoritesScreen = () => {
 
   return (
     <View style={styles.container}>
-      {productsWithFavoriteId?.map((product) => {
+      {productsWithFavoriteId?.map((product: ProductSummary) => {
         return (
           <ListItem.Swipeable
             key={product.title}

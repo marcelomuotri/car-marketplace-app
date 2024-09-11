@@ -12,7 +12,7 @@ import { ThemedText } from '../ThemedText'
 import { getCurrency } from '@/components/utils/getCurrency'
 import { useRouter } from 'expo-router'
 import { useIncrementProductField } from '@/state/api/productApi'
-import { formatNumber } from '../utils/formatter'
+import { capitalizeFirstLetter, formatNumber } from '../utils/formatter'
 
 interface ProductCardProps {
   product: Product
@@ -42,7 +42,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           style={[styles.infoContainer, Platform.OS === 'ios' && styles.iosGap]}
         >
           <ThemedText type="default" numberOfLines={2} ellipsizeMode="tail">
-            {product.title}
+            {capitalizeFirstLetter(product.title)}
           </ThemedText>
           <ThemedText type="defaultSemiBold">
             {currency} {formatNumber(product.price)}

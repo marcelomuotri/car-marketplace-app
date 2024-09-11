@@ -95,24 +95,28 @@ const getFilteredDocuments = async (
   limitCount,
   cursor,
 ) => {
-  let q = query(collectionRef)
-  console.log(filters, 'filtros en firebase')
+  let q = collectionRef
 
   if (filters && Object.keys(filters).length > 0) {
-    const filterClauses = Object.entries(filters).map(([key, value]) => {
+    Object.entries(filters).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        return where(key, 'array-contains-any', value)
+        q = query(q, where(key, 'array-contains-any', value))
+      } else if (key === 'title') {
+        value = value.toLowerCase()
+        const startValue = value
+        const endValue = value + '\uf8ff' // Rango de búsqueda
+        q = query(
+          q,
+          where('title', '>=', startValue),
+          where('title', '<=', endValue),
+        )
       } else {
-        return where(key, '==', value)
+        q = query(q, where(key, '==', value))
       }
     })
-
-    q = query(collectionRef, ...filterClauses)
   }
 
   q = query(q, limit(limitCount))
-
-  console.log(cursor, 'cursor')
 
   // Si hay un cursor, empezar después del último documento visible
   if (cursor) {
@@ -140,7 +144,7 @@ const getDocumentsByIds = async (collectionRef, ids, populate) => {
   })
 
   const results = await Promise.all(promises)
-  return { data: results.filter((result) => result !== null) }
+  return { data: results?.filter((result) => result !== null) }
 }
 
 // Crear un baseQuery personalizado para Firebase
@@ -166,7 +170,6 @@ export const firebaseBaseQuery = async ({
           }
         } else {
           // Caso de obtener documentos con filtros
-          // en este solo tenemos que poner el limit y start After
           const filteredDocuments = await getFilteredDocuments(
             collectionRef,
             filters,
@@ -174,13 +177,10 @@ export const firebaseBaseQuery = async ({
             limitCount,
             cursor,
           )
-          console.log(filteredDocuments)
           return filteredDocuments
         }
       case 'GET_BY_IDS':
-        //aca es si viene con multiples ids
         if (filters && filters.ids && filters.ids.length > 0) {
-          // Caso de obtener múltiples documentos por ID
           return await getDocumentsByIds(collectionRef, filters.ids, populate)
         } else {
           return { data: [] }
@@ -193,9 +193,9 @@ export const firebaseBaseQuery = async ({
         return { data: { id: docRef.id, ...data } }
 
       case 'DELETE':
-        const docToDeleteRef = doc(db, path, data.id) // Assuming `data` has an id field
+        const docToDeleteRef = doc(db, path, data.id)
         await deleteDoc(docToDeleteRef)
-        return { data: { id: data.id } } // or some success indicator,
+        return { data: { id: data.id } }
 
       case 'PUT':
         const docToUpdateRef = doc(db, path, data.id)
@@ -203,7 +203,7 @@ export const firebaseBaseQuery = async ({
 
         if (incrementField) {
           await updateDoc(docToUpdateRef, {
-            [incrementField]: increment(1), // Incrementa el campo especificado en 1
+            [incrementField]: increment(1),
           })
         } else {
           await updateDoc(docToUpdateRef, data)

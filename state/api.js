@@ -1,20 +1,4 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
-import { db } from '../firebaseConfig'
-import {
-  collection,
-  getDocs,
-  addDoc,
-  doc,
-  deleteDoc,
-  updateDoc,
-  query,
-  where,
-  getDoc,
-  increment,
-  Timestamp,
-  limit,
-  startAfter,
-} from 'firebase/firestore'
 import { firebaseBaseQuery } from './firebaseApi/firebaseApi'
 
 export const api = createApi({

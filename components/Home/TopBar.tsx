@@ -11,6 +11,7 @@ import { competitionCategories } from '@/constants/Categories'
 interface TopBarProps {
   selectedCompetition: string
   setSelectedCompetition: (option: string) => void
+  setCursor: any
 }
 
 const TopBar = ({
