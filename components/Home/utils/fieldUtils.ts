@@ -12,7 +12,7 @@ export const getFieldsToShow = (product: Product, t: Function) => {
     {
       id: 6,
       label: t('homologation'),
-      value: product?.homologation ? 'SI' : 'NO',
+      value: product?.homologation,
     },
     { id: 7, label: t('size'), value: product?.size },
   ]

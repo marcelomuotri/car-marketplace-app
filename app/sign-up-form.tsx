@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   SafeAreaView,
@@ -15,11 +15,11 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import Loader from '@/components/Loader'
-import ThemedButton from '@/components/ThemedButton'
 import { ThemedText } from '@/components/ThemedText'
 import { useTranslation } from 'react-i18next'
 import LoginButton from '@/components/Login/LoginButton'
 import Back from '@/components/Back'
+import { router } from 'expo-router'
 
 interface SignUpFieldsForm {
   email: string
@@ -36,6 +36,7 @@ export default function SignUpForm() {
   const { t } = useTranslation()
   const { createUser } = useAuthService()
   const { loading } = useSelector((state: RootState) => state.auth)
+  const [sendEmailScreen, setSendEmailScreen] = useState(false)
 
   useAuthRedirect()
 
@@ -45,6 +46,11 @@ export default function SignUpForm() {
       return alert('Las contraseñas no coinciden')
     }
     createUser({ email, password })
+    setSendEmailScreen(true)
+  }
+
+  const handleBackHome = () => {
+    router.replace('/')
   }
   if (loading) {
     return <Loader />
@@ -65,81 +71,100 @@ export default function SignUpForm() {
             borderRadius: 6,
           }}
         />
-        <ThemedText style={styles.title} type="defaultSemiBold">
-          {t('registerAnAccount')}
-        </ThemedText>
-        <KeyboardAwareScrollView>
-          <View style={styles.form}>
-            <View style={styles.input}>
-              <Controller
-                name="email"
-                control={control}
-                rules={{
-                  required: true,
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                    message: 'invalid email address',
-                  },
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <ThemedTextInput
-                    label="Email"
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder=""
-                    error={errors.email}
-                  />
-                )}
-              />
-            </View>
-            <View style={styles.input}>
-              <Controller
-                name="password"
-                control={control}
-                rules={{
-                  required: true,
-                  minLength: 6,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <ThemedTextInput
-                    label="Contraseña"
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder=""
-                    secureTextEntry
-                    error={errors.password}
-                  />
-                )}
-              />
-            </View>
-            <View style={styles.input}>
-              <Controller
-                name="confirmPassword"
-                control={control}
-                rules={{
-                  required: true,
-                  minLength: 6,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <ThemedTextInput
-                    label="Repetir contraseña"
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder=""
-                    secureTextEntry
-                    error={errors.confirmPassword}
-                  />
-                )}
-              />
-            </View>
+        {sendEmailScreen ? (
+          <View>
+            <ThemedText style={styles.title} type="defaultSemiBold">
+              {t('verifyYourAccount')}
+            </ThemedText>
+            <ThemedText style={styles.text}>
+              {t('weSentYouAVerificationEmail')}
+            </ThemedText>
             <View style={styles.formAction}>
               <LoginButton
-                title={'Registrar cuenta'}
-                onPress={handleSubmit(handleCreateAccount)}
+                title={t('back')}
+                onPress={handleSubmit(handleBackHome)}
               />
             </View>
           </View>
-        </KeyboardAwareScrollView>
+        ) : (
+          <>
+            <ThemedText style={styles.title} type="defaultSemiBold">
+              {t('registerAnAccount')}
+            </ThemedText>
+            <KeyboardAwareScrollView>
+              <View style={styles.form}>
+                <View style={styles.input}>
+                  <Controller
+                    name="email"
+                    control={control}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                        message: 'invalid email address',
+                      },
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <ThemedTextInput
+                        label="Email"
+                        onChangeText={onChange}
+                        value={value}
+                        placeholder=""
+                        error={errors.email}
+                      />
+                    )}
+                  />
+                </View>
+                <View style={styles.input}>
+                  <Controller
+                    name="password"
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 6,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <ThemedTextInput
+                        label="Contraseña"
+                        onChangeText={onChange}
+                        value={value}
+                        placeholder=""
+                        secureTextEntry
+                        error={errors.password}
+                      />
+                    )}
+                  />
+                </View>
+                <View style={styles.input}>
+                  <Controller
+                    name="confirmPassword"
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 6,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <ThemedTextInput
+                        label="Repetir contraseña"
+                        onChangeText={onChange}
+                        value={value}
+                        placeholder=""
+                        secureTextEntry
+                        error={errors.confirmPassword}
+                      />
+                    )}
+                  />
+                </View>
+                <View style={styles.formAction}>
+                  <LoginButton
+                    title={'Registrar cuenta'}
+                    onPress={handleSubmit(handleCreateAccount)}
+                  />
+                </View>
+              </View>
+            </KeyboardAwareScrollView>
+          </>
+        )}
       </View>
     </SafeAreaView>
   )
@@ -158,6 +183,12 @@ const styles = StyleSheet.create({
     color: '#FFF',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  text: {
+    fontSize: 16,
+    color: '#FFF',
+    marginBottom: 20,
+    lineHeight: 20,
   },
   form: {
     flexGrow: 1,

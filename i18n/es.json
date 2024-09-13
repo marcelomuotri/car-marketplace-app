@@ -67,5 +67,9 @@
   "registerAnAccount": "Registrá una cuenta",
   "emptyProductsTitle": "No encontramos productos que coincidan con tu búsqueda",
   "emptyProductsSubtitle": "Probá ajustando los filtros o intentá con otros términos.",
-  "emptyFavorites": "Todavía no tenés favoritos guardados"
+  "emptyFavorites": "Todavía no tenés favoritos guardados",
+  "verifyYourAccount": "Verificá tu bandeja de entrada",
+  "weSentYouAVerificationEmail": "Te mandamos un mail para verificar tu cuenta. Hacé clic en el enlace para confirmarla y volvé cuando termines.",
+  "back": "Volver",
+  "verifyYourEmailToContinue": "Verificá tu email para ingresar"
 }

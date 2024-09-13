@@ -2,9 +2,9 @@
   "expo": {
     "name": "2y4Race",
     "slug": "car-marketplace-app",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon1.png",
     "scheme": "car-marketplace-app",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,10 +17,10 @@
       "bundleIdentifier": "com.carmarketplace.app"
     },
     "android": {
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon-2y4.png",
+        "backgroundColor": "#3D9970"
       },
       "package": "com.muotrimarcelo.carmarketplaceapp",
       "intentFilters": [
@@ -34,15 +34,10 @@
               "pathPrefix": "/"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",

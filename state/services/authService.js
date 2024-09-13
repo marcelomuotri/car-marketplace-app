@@ -15,7 +15,11 @@ import {
 } from '../slices/authSlice'
 import { auth, db } from '../../firebaseConfig'
 import { createUserPayload } from '@/models/authModel'
-import { onAuthStateChanged, updatePassword } from 'firebase/auth'
+import {
+  onAuthStateChanged,
+  updatePassword,
+  sendEmailVerification,
+} from 'firebase/auth'
 import {
   convertIsoStringToTimestamp,
   convertTimestampToIsoString,
@@ -27,7 +31,7 @@ export const useAuthService = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
+      if (firebaseUser?.emailVerified) {
         const docRef = doc(db, 'users', firebaseUser.uid)
         const docSnap = await getDoc(docRef)
         const payload = {
@@ -58,15 +62,22 @@ export const useAuthService = () => {
       )
       const user = userCredential.user
       if (user) {
-        //modelo para guardar datos
-        const payload = {
-          user: user.email,
+        if (user.emailVerified) {
+          //modelo para guardar datos
+          const payload = {
+            user: user.email,
+          }
+          dispatch(loginSuccess(payload))
+          return user
+        } else if (!user.emailVerified) {
+          await auth.signOut()
+          dispatch(loginFailure('notVerified'))
+          return user
         }
-        dispatch(loginSuccess(payload))
       }
     } catch (error) {
       console.log(error)
-      dispatch(loginFailure(error.message))
+      dispatch(loginFailure('incorrectPassword'))
     }
   }
   const createUser = async ({ email, password }) => {
@@ -80,12 +91,12 @@ export const useAuthService = () => {
       const user = userCredential.user
 
       if (user) {
+        await sendEmailVerification(user)
         const userPayload = createUserPayload(user)
         await saveUserToFirestore(userPayload, user.uid)
-        dispatch(loginSuccess({ user: user.email, userData: userPayload }))
+        //dispatch(loginSuccess({ user: user.email, userData: userPayload }))
+        await auth.signOut()
         return user
-      } else {
-        throw new Error('User creation failed')
       }
     } catch (error) {
       console.error('Error creating user:', error)

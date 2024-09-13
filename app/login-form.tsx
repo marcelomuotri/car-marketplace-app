@@ -19,7 +19,11 @@ import ThemedTextInput from '../components/ThemedTextInput'
 import Loader from '@/components/Loader'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  sendEmailVerification,
+} from 'firebase/auth'
 import { auth } from '@/firebaseConfig'
 import LoginButton from '@/components/Login/LoginButton'
 import { ThemedText } from '@/components/ThemedText'
@@ -81,28 +85,38 @@ export default function LoginForm() {
   }, [response])
 
   const { loading, error } = useSelector((state: RootState) => state.auth)
+  const [showEmailVerification, setShowEmailVerification] = useState(false)
+  const [persistUser, setpersistUser] = useState<any>()
 
   useAuthRedirect()
 
   const handleLogin: SubmitHandler<LoginFormFieldsProps> = async (data) => {
-    try {
-      const { email, password } = data
-      await loginUser({ email, password })
-
-      router.replace('/')
-    } catch (error) {
-      console.error('Login error:', error)
-      Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
-    }
+    const { email, password } = data
+    const user = await loginUser({ email, password })
+    setpersistUser(user)
+    //router.replace('/')
   }
 
   const signInWithGoogle = () => {
     promptAsync()
   }
 
+  const onResendVerificatioEmail = () => {
+    sendEmailVerification(persistUser)
+    setShowEmailVerification(false)
+  }
+
+  const navigateToLogin = () => {
+    router.replace('/')
+  }
+
   useEffect(() => {
-    if (error) {
+    console.log(error)
+    if (error === 'incorrectPassword') {
       Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
+    } else if (error === 'notVerified') {
+      setShowEmailVerification(true)
+      //Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
     }
   }, [error])
 
@@ -113,100 +127,127 @@ export default function LoginForm() {
         source={require('../assets/images/logo.jpeg')}
         style={styles.image}
       />
-      <ThemedText style={styles.title} type="defaultSemiBold">
-        {t('loginTitle')}
-      </ThemedText>
-      <KeyboardAwareScrollView>
-        <View style={styles.form}>
-          <View style={styles.input}>
-            <Controller
-              name="email"
-              control={control}
-              rules={{
-                required: true,
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: t('invalidEmail'),
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <ThemedTextInput
-                  label={t('emailLabel')}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder=""
-                  error={errors.email}
-                />
-              )}
-            />
-          </View>
-          <View style={styles.input}>
-            <Controller
-              name="password"
-              control={control}
-              rules={{
-                required: true,
-                minLength: 6,
-              }}
-              render={({ field: { onChange, value } }) => (
-                <ThemedTextInput
-                  label={t('passwordLabel')}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder=""
-                  secureTextEntry
-                  error={errors.password}
-                />
-              )}
-            />
-          </View>
-          {error && (
-            <Text style={{ marginBottom: 5, color: 'red' }}>
-              {t('loginErrorMessage')}
-            </Text>
-          )}
-          <LoginButton
-            title={t('loginButton')}
-            onPress={handleSubmit(handleLogin)}
-          />
-          <Link href={'/recover-password'} asChild>
-            <Text style={styles.forgotPassword}>{t('forgotPasswordLink')}</Text>
-          </Link>
-          <View
-            style={{
-              marginVertical: 20,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 15,
-            }}
-          >
-            <View
-              style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
-            ></View>
-            <View>
-              <Text style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}>
-                {t('or')}
-              </Text>
-            </View>
-            <View
-              style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
-            ></View>
-          </View>
-          <LoginButton
-            googleIcon
-            title={t('googleLoginButton')}
-            onPress={signInWithGoogle}
-          />
-          <ThemedText style={styles.formFooter} type="defaultSemiBold">
-            {t('noAccount')}{' '}
-            <Link href={'/sign-up-form'} asChild>
-              <Text style={{ textDecorationLine: 'underline' }}>
-                {t('signUpLink')}
-              </Text>
-            </Link>
+      {showEmailVerification ? (
+        <View style={{ paddingHorizontal: 24 }}>
+          <ThemedText style={styles.title} type="defaultSemiBold">
+            {t('verifyYourEmailToContinue')}
           </ThemedText>
+          <ThemedText style={styles.text}>
+            {t('weSentYouAVerificationEmail')}
+          </ThemedText>
+          <View style={{ flexDirection: 'row', marginTop: 20 }}>
+            <ThemedText style={styles.text}>Si no te llegó el mail,</ThemedText>
+            <ThemedText
+              style={{ color: 'white', textDecorationLine: 'underline' }}
+              onPress={onResendVerificatioEmail}
+            >
+              {' '}
+              hacé click acá{' '}
+            </ThemedText>
+            <ThemedText style={styles.text}>y te lo</ThemedText>
+          </View>
+          <ThemedText style={styles.text}>volvemos a enviar</ThemedText>
+          <View style={{ marginTop: 20 }}>
+            <LoginButton title={t('back')} onPress={navigateToLogin} />
+          </View>
         </View>
-      </KeyboardAwareScrollView>
+      ) : (
+        <View>
+          <ThemedText style={styles.title} type="defaultSemiBold">
+            {t('loginTitle')}
+          </ThemedText>
+          <KeyboardAwareScrollView>
+            <View style={styles.form}>
+              <View style={styles.input}>
+                <Controller
+                  name="email"
+                  control={control}
+                  rules={{
+                    required: true,
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: t('invalidEmail'),
+                    },
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <ThemedTextInput
+                      label={t('emailLabel')}
+                      onChangeText={onChange}
+                      value={value}
+                      placeholder=""
+                      error={errors.email}
+                    />
+                  )}
+                />
+              </View>
+              <View style={styles.input}>
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{
+                    required: true,
+                    minLength: 6,
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <ThemedTextInput
+                      label={t('passwordLabel')}
+                      onChangeText={onChange}
+                      value={value}
+                      placeholder=""
+                      secureTextEntry
+                      error={errors.password}
+                    />
+                  )}
+                />
+              </View>
+              <LoginButton
+                title={t('loginButton')}
+                onPress={handleSubmit(handleLogin)}
+              />
+              <Link href={'/recover-password'} asChild>
+                <Text style={styles.forgotPassword}>
+                  {t('forgotPasswordLink')}
+                </Text>
+              </Link>
+              <View
+                style={{
+                  marginVertical: 20,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 15,
+                }}
+              >
+                <View
+                  style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                ></View>
+                <View>
+                  <Text
+                    style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}
+                  >
+                    {t('or')}
+                  </Text>
+                </View>
+                <View
+                  style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                ></View>
+              </View>
+              <LoginButton
+                googleIcon
+                title={t('googleLoginButton')}
+                onPress={signInWithGoogle}
+              />
+              <ThemedText style={styles.formFooter} type="defaultSemiBold">
+                {t('noAccount')}{' '}
+                <Link href={'/sign-up-form'} asChild>
+                  <Text style={{ textDecorationLine: 'underline' }}>
+                    {t('signUpLink')}
+                  </Text>
+                </Link>
+              </ThemedText>
+            </View>
+          </KeyboardAwareScrollView>
+        </View>
+      )}
     </View>
   )
 }
@@ -224,6 +265,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  text: {
+    fontSize: 16,
+    color: '#FFF',
+    lineHeight: 20,
   },
   image: {
     marginTop: 20,
