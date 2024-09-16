@@ -36,6 +36,8 @@ const MyAccount = () => {
     },
   })
 
+  console.log(userData)
+
   if (loading || isUpdating) return <Loader />
 
   const onHandleChangePassword = () => {

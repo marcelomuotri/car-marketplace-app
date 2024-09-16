@@ -13,6 +13,7 @@ import { getCurrency } from '@/components/utils/getCurrency'
 import { useRouter } from 'expo-router'
 import EmptyList from '@/components/emptyList/EmptyList'
 import { useTranslation } from 'react-i18next'
+import { formatNumber } from '@/components/utils/formatter'
 
 export type ProductSummary = Pick<
   Product,
@@ -30,7 +31,7 @@ const FavoritesScreen = () => {
     populate: [],
     filters: { uid: userData?.uid },
   })
-  const { removeFavorite } = useDeleteFavorite()
+  const { removeFavorite, isLoadingRemoveFavorite } = useDeleteFavorite()
 
   const productIds =
     favorites?.map((favorite: Favorites) => favorite.productId) || []
@@ -47,7 +48,8 @@ const FavoritesScreen = () => {
       )?.id,
     })) || []
 
-  if (isLoadingFavorites || isFetching) return <Loader />
+  if (isLoadingFavorites || isFetching || isLoadingRemoveFavorite)
+    return <Loader />
 
   if (products?.length === 0) return <EmptyList title={t('emptyFavorites')} />
 
@@ -84,7 +86,10 @@ const FavoritesScreen = () => {
                   <ThemedText>Visitas: {product.visitors}</ThemedText>
                 </View>
                 <ThemedText type="defaultSemiBold">
-                  {getCurrency(product.currency)} {product.price}
+                  {/* {getCurrency(product.currency)} {product.price} */}
+                  {product?.price
+                    ? `${getCurrency(product.currency)} ${formatNumber(product.price)}`
+                    : 'Solicitar cotización'}
                 </ThemedText>
               </View>
             </View>

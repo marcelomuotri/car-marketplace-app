@@ -77,7 +77,7 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
               style={styles.selectButton}
             >
               <ThemedText style={styles.labelText}>
-                {selectedLabel || placeholder}
+                {field.value || selectedLabel || placeholder}
               </ThemedText>
               <ArrowDownIcon />
             </TouchableOpacity>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: '80%',
+    width: '60%',
     maxHeight: '60%',
     backgroundColor: 'white',
     borderRadius: 10,

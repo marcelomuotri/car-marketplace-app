@@ -45,7 +45,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {capitalizeFirstLetter(product.title)}
           </ThemedText>
           <ThemedText type="defaultSemiBold">
-            {currency} {formatNumber(product.price)}
+            <ThemedText type="defaultSemiBold">
+              {product?.price
+                ? `${currency} ${formatNumber(product.price)}`
+                : 'Solicitar cotización'}
+            </ThemedText>
           </ThemedText>
         </View>
       </View>

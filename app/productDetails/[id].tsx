@@ -50,8 +50,9 @@ const Index = () => {
   const currency = getCurrency(product?.currency)
   const [initials, setInitials] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const { addNewFavorite } = useAddFavorite()
-  const { removeFavorite } = useDeleteFavorite()
+  const { addNewFavorite, isLoading: isLoadingAddFavorite } = useAddFavorite()
+  const { removeFavorite, isLoading: isLoadingRemoveFavorite } =
+    useDeleteFavorite()
 
   const { favorite, isLoadingFavorite } = useGetOneFavorite({
     filters: { uid: userData?.uid, productId: id },
@@ -93,11 +94,8 @@ const Index = () => {
     // Inserta el valor real de 'id' en la URL
     const productUrl = `https://app.2y4race.com/productDetails/${id}`
 
-    console.log(productUrl)
-
     const message = `${productUrl}`
     const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`
-    console.log(whatsappUrl)
 
     Linking.openURL(whatsappUrl)
   }
@@ -126,7 +124,10 @@ const Index = () => {
                 <TouchableOpacity onPress={shareToWhatsApp}>
                   <ShareIcon />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onAddToFavorites}>
+                <TouchableOpacity
+                  onPress={onAddToFavorites}
+                  disabled={isLoadingAddFavorite || isLoadingRemoveFavorite}
+                >
                   <HeartIcon color={isFavorited ? 'red' : 'none'} />
                 </TouchableOpacity>
               </View>

@@ -107,7 +107,7 @@ export default function LoginForm() {
   }
 
   const navigateToLogin = () => {
-    router.replace('/')
+    setShowEmailVerification(false)
   }
 
   useEffect(() => {
