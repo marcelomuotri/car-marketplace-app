@@ -20,7 +20,7 @@ export const getFieldsToShow = (product: Product, t: Function) => {
   switch (product?.category) {
     case 'autos':
     case 'motos':
-    case 'kartings':
+    case 'karting':
     case 'ATVS':
       return fields.filter((field) => [0, 1, 2, 3, 5].includes(field.id))
     case 'indumentaria':

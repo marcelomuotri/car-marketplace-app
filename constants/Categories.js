@@ -16,7 +16,7 @@ export const competitionCategories = [
   { id: '1', label: 'Autos', value: 'auto', Icon: <CarIcon /> },
   { id: '2', label: 'Motos', value: 'moto', Icon: <MotorbikeIcon /> },
   { id: '3', label: 'ATVs', value: 'atv', Icon: <ATVsIcon /> },
-  { id: '4', label: 'Kartings', value: 'karting', Icon: <KartingIcon /> },
+  { id: '4', label: 'Karting', value: 'karting', Icon: <KartingIcon /> },
 ]
 
 export const staticCategories = [

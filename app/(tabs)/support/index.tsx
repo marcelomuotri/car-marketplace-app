@@ -17,9 +17,10 @@ const Support = () => {
   const [showSuccessDrawer, setShowSuccessDrawer] = useState(false)
   const [success, setSuccess] = useState<boolean | null>(null)
   const supportOptions = [
-    { value: 'Publicaciones', label: t('publicationsProblem') },
-    { value: 'Perfil', label: t('profileProblem') },
-    { value: 'Otros', label: t('others') },
+    { value: t('loginProblem'), label: t('loginProblem') },
+    { value: t('profileProblem'), label: t('profileProblem') },
+    { value: t('deleteAccount'), label: t('deleteAccount') },
+    { value: t('others'), label: t('others') },
   ]
 
   const onCreateSupportQuery = async (data: SupportQueryUpload) => {
@@ -27,7 +28,7 @@ const Support = () => {
     if (result.data) {
       setShowSuccessDrawer(true)
       setSuccess(true)
-      reset()
+      reset({ subject: '', description: '' })
     }
   }
 
@@ -40,7 +41,7 @@ const Support = () => {
       ? 'La consulta se ha enviado correctamente'
       : 'En este momento, no podemos procesar tu consulta',
     subTitle: success
-      ? 'Pronto alguien del equipo te va a responder via email'
+      ? 'Pronto alguien del equipo te va a responder vía email'
       : 'Por favor intenta más tarde.',
     type: success ? 'success' : 'error',
   }
@@ -71,7 +72,7 @@ const Support = () => {
             placeholder="Seleccionar"
           ></ThemedInput>
           <ThemedInput
-            name="desctiption"
+            name="description"
             type="text"
             numberOfLines={4}
             label="Descripción"

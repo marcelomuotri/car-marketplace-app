@@ -1,11 +1,14 @@
 // src/framework/api/productApi.js
 import { useAddEntityMutation } from '../api'
 import { SupportQueryUpload } from '@/types'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 const base = 'support'
 
 export const useAddSupport = () => {
   const [addSupport, { isLoading, error }] = useAddEntityMutation()
+  const userData = useSelector((state: RootState) => state.auth.userData)
 
   const addNewSupport = async (supportData: SupportQueryUpload) => {
     try {
@@ -14,7 +17,10 @@ export const useAddSupport = () => {
         data: {
           ...supportData,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          email: userData?.userEmail,
+          name: userData?.name || null,
+          uid: userData.uid,
+          type: 'app',
         },
       })
       return result

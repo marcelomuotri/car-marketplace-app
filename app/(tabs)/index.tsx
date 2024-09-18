@@ -17,6 +17,8 @@ import SearchIcon from '@/assets/icons/SearchIcon'
 import { capitalizeFirstLetter } from '@/components/utils/formatter'
 import { Product } from '@/types'
 import { router } from 'expo-router'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/state/store'
 
 export type ProductListProps = Pick<
   Product,
@@ -25,10 +27,12 @@ export type ProductListProps = Pick<
 
 const Index: React.FC = () => {
   const { t } = useTranslation()
+  const { userData } = useSelector((state: RootState) => state.auth)
+  console.log(userData)
 
   // Estado de filtros y visibilidad del modal de filtros
   const [filters, setFilters] = useState({
-    competition: 'auto',
+    competition: userData?.favoriteCompetition || 'auto',
     category: null,
     subCategory: null,
   })
@@ -56,7 +60,6 @@ const Index: React.FC = () => {
   if (search) {
     productFilters.title = search
   }
-  console.log(search)
 
   if (selectedCategoryLabel) {
     productFilters.category = selectedCategoryLabel
@@ -159,6 +162,7 @@ const Index: React.FC = () => {
           setFilters((prev) => ({ ...prev, competition }))
         }
         setCursor={setCursor}
+        uid={userData?.uid}
       />
 
       <Input

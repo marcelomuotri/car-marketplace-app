@@ -177,6 +177,10 @@ const Index = () => {
               <View style={styles.vendorInfoContainer}>
                 <View style={styles.labeledTextContainer}>
                   <ThemedLabeledText
+                    label={t('description')}
+                    value={user.description}
+                  />
+                  <ThemedLabeledText
                     label={t('phone')}
                     value={user.phoneNumber}
                   />
@@ -185,7 +189,6 @@ const Index = () => {
                     value={user.contactEmail}
                   />
                 </View>
-                <SecondaryButton title={t('seeSellerProfile')} />
               </View>
             </BottomSheetDrawer>
           </View>

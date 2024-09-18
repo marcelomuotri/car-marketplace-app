@@ -1,7 +1,7 @@
 export const variants = [
   {
     id: 1,
-    category: ['autos', 'motos', 'kartings', 'ATVs'],
+    category: ['autos', 'motos', 'karting', 'ATVs'],
     fields: ['condition', 'brand', 'model', 'subCategory', 'year'],
   },
   {

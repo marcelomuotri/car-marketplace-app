@@ -25,6 +25,7 @@ export interface UserData {
   isSeller: boolean
   nameToShow: string | null
   dni: string | null
+  favoriteCompetition: string
 }
 
 export type BuyerProfile = Pick<
@@ -89,6 +90,7 @@ export interface CategoryData {
 export interface SupportQueryUpload {
   subject: string
   description: string
+  type?: string
 }
 
 export interface SupportQuery extends SupportQueryUpload {

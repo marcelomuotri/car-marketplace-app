@@ -1,6 +1,12 @@
 import { ThemedText } from '@/components/ThemedText'
 import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+} from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
@@ -15,6 +21,9 @@ import ChangePassModal from '@/components/myAccount/changePassWordModal/ChangePa
 import { useAuthService } from '@/state/services/authService'
 import BottomSuccessDrawer from '@/components/BottomSuccessDrawer/BottomSuccessDrawer'
 import { BuyerProfile } from '@/types'
+import ExitIcon from '@/assets/icons/ExitIcon'
+import { Link } from 'expo-router'
+import ArrowRight from '@/assets/icons/ArrowRight'
 
 const MyAccount = () => {
   const { t } = useTranslation()
@@ -35,8 +44,6 @@ const MyAccount = () => {
       state: userData?.state,
     },
   })
-
-  console.log(userData)
 
   if (loading || isUpdating) return <Loader />
 
@@ -83,6 +90,45 @@ const MyAccount = () => {
           t={t}
           setShowSuccessPassDrawer={setShowSuccessPassDrawer}
         />
+        {/* <Link
+          style={{
+            borderWidth: 1,
+            borderColor: '#67C4A7',
+            backgroundColor: 'rgba(103, 196, 167, 0.15)',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            borderRadius: 16,
+            marginBottom: 16,
+          }}
+          href="https://app.2y4race.com"
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <ThemedText
+              style={{
+                color: '#393F42',
+              }}
+            >
+              Publicá gratis tus productos
+            </ThemedText>
+            <ArrowRight />
+          </View>
+        </Link> */}
+        <TouchableOpacity
+          style={styles.bannerContainer}
+          onPress={() => Linking.openURL('https://app.2y4race.com')}
+        >
+          <ThemedText style={styles.bannerText}>
+            Publicá gratis tus productos
+          </ThemedText>
+          <ArrowRight />
+        </TouchableOpacity>
+
         <ThemedText type="title" style={{ marginBottom: 20 }}>
           {t('personalData').toLocaleUpperCase()}
         </ThemedText>
@@ -103,7 +149,18 @@ const MyAccount = () => {
               />
             </View>
             <ThemedText style={{ fontWeight: 800 }}>************</ThemedText>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <ExitIcon />
+              <SecondaryButton
+                underline
+                title={t('closeSession')}
+                onPress={onCloseSession}
+                style={{ padding: 5, alignItems: 'flex-start' }}
+              />
+            </View>
           </View>
+          <View style={{ borderWidth: 0.3, borderColor: '#E3E3E3' }}></View>
+
           <ThemedInput
             name="name"
             label={t('name')}
@@ -151,7 +208,6 @@ const MyAccount = () => {
             title={t('save')}
             onPress={handleSubmit(onHandleSaveAccount)}
           />
-          <ThemedButton title={t('closeSession')} onPress={onCloseSession} />
         </View>
       </ScrollView>
     </>
@@ -179,6 +235,21 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 50,
     gap: 10,
+  },
+  bannerContainer: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#67C4A7',
+    backgroundColor: 'rgba(103, 196, 167, 0.15)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 16,
+    marginBottom: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center', // Centra verticalmente
+  },
+  bannerText: {
+    color: '#393F42',
   },
 })
 

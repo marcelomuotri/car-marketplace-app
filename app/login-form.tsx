@@ -136,7 +136,9 @@ export default function LoginForm() {
             {t('weSentYouAVerificationEmail')}
           </ThemedText>
           <View style={{ flexDirection: 'row', marginTop: 20 }}>
-            <ThemedText style={styles.text}>Si no te llegó el mail,</ThemedText>
+            <ThemedText style={styles.text}>
+              Si no te llegó el email,
+            </ThemedText>
             <ThemedText
               style={{ color: 'white', textDecorationLine: 'underline' }}
               onPress={onResendVerificatioEmail}

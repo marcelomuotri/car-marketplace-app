@@ -116,6 +116,7 @@ export const useAuthService = () => {
   }
 
   const saveUserToFirestore = async (userPayload, uid) => {
+    userPayload.favoriteCompetition = 'auto'
     try {
       const userDocRef = doc(db, 'users', uid)
       await setDoc(userDocRef, userPayload)

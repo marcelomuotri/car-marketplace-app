@@ -130,7 +130,7 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
 const styles = StyleSheet.create({
   inputContainerStyle: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E3E3E3',
     borderRadius: 4,
     paddingHorizontal: 5,
   },

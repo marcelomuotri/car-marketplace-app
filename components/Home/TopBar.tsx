@@ -7,18 +7,22 @@ import BottomSheetDrawer from '../BottomSheetDrawer'
 import { CheckBox } from '@rneui/themed'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { competitionCategories } from '@/constants/Categories'
+import { useUpdateUser } from '@/state/api/userApi'
 
 interface TopBarProps {
   selectedCompetition: string
   setSelectedCompetition: (option: string) => void
   setCursor: any
+  uid: string
 }
 
 const TopBar = ({
   setSelectedCompetition,
   selectedCompetition,
   setCursor,
+  uid,
 }: TopBarProps) => {
+  const { updateUserData, isUpdating } = useUpdateUser()
   const [isVisible, setIsVisible] = useState(false)
   const tint = useThemeColor({}, 'tint')
 
@@ -34,6 +38,10 @@ const TopBar = ({
   }
 
   const onHandleSelectOption = (optionValue: string) => {
+    updateUserData({
+      id: uid,
+      favoriteCompetition: optionValue,
+    })
     setSelectedCompetition(optionValue)
     setTimeout(() => {
       handleClose()
