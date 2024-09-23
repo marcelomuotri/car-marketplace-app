@@ -39,7 +39,9 @@ export default function AppLayout() {
           },
           android: {
             backgroundColor: 'white',
-            height: 60,
+            height: 80,
+            paddingBottom: 12,
+            paddingTop: 12,
           },
         }),
         tabBarLabelStyle: Platform.select({

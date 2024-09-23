@@ -90,35 +90,6 @@ const MyAccount = () => {
           t={t}
           setShowSuccessPassDrawer={setShowSuccessPassDrawer}
         />
-        {/* <Link
-          style={{
-            borderWidth: 1,
-            borderColor: '#67C4A7',
-            backgroundColor: 'rgba(103, 196, 167, 0.15)',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderRadius: 16,
-            marginBottom: 16,
-          }}
-          href="https://app.2y4race.com"
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <ThemedText
-              style={{
-                color: '#393F42',
-              }}
-            >
-              Publicá gratis tus productos
-            </ThemedText>
-            <ArrowRight />
-          </View>
-        </Link> */}
         <TouchableOpacity
           style={styles.bannerContainer}
           onPress={() => Linking.openURL('https://app.2y4race.com')}
@@ -146,6 +117,7 @@ const MyAccount = () => {
                 underline
                 title={t('changePassword')}
                 onPress={onHandleChangePassword}
+                style={{ padding: 0 }}
               />
             </View>
             <ThemedText style={{ fontWeight: 800 }}>************</ThemedText>
@@ -159,8 +131,13 @@ const MyAccount = () => {
               />
             </View>
           </View>
-          <View style={{ borderWidth: 0.3, borderColor: '#E3E3E3' }}></View>
-
+          <View
+            style={{
+              borderWidth: 0.3,
+              borderColor: '#E3E3E3',
+              marginBottom: 20,
+            }}
+          ></View>
           <ThemedInput
             name="name"
             label={t('name')}
@@ -179,7 +156,7 @@ const MyAccount = () => {
             type="phone"
             control={control}
           />
-          <View style={{ borderWidth: 0.2, borderColor: '#E3E3E3' }}></View>
+          <View style={{ marginBottom: 13 }}></View>
           <ThemedText type="title">
             {t('address').toLocaleUpperCase()}
           </ThemedText>
@@ -242,7 +219,7 @@ const styles = StyleSheet.create({
     borderColor: '#67C4A7',
     backgroundColor: 'rgba(103, 196, 167, 0.15)',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 16,
     marginBottom: 16,
     justifyContent: 'space-between',

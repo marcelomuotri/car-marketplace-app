@@ -171,15 +171,12 @@ const Index = () => {
               isVisible={isDrawerOpen}
               handleClose={closeDrawer}
               header={t('contactData')}
-              height={0.5}
+              height={0.7}
             >
               <VendorInfo user={user} initials={initials} />
               <View style={styles.vendorInfoContainer}>
                 <View style={styles.labeledTextContainer}>
-                  <ThemedLabeledText
-                    label={t('description')}
-                    value={user.description}
-                  />
+                  <ThemedLabeledText label={''} value={user.description} />
                   <ThemedLabeledText
                     label={t('phone')}
                     value={user.phoneNumber}

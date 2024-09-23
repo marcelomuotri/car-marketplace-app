@@ -81,7 +81,7 @@ const ChangePassModal = ({
 
   return (
     <ThemedModal visible={visible} onClose={onCloseModal}>
-      <View style={{ width: '100%', gap: 20 }}>
+      <View style={{ gap: 20 }}>
         <Text>{t('changePassword')}</Text>
         <ThemedInput
           name="password"

@@ -111,7 +111,6 @@ export default function LoginForm() {
   }
 
   useEffect(() => {
-    console.log(error)
     if (error === 'incorrectPassword') {
       Alert.alert(t('loginAlertTitle'), t('loginAlertMessage'))
     } else if (error === 'notVerified') {
@@ -128,7 +127,7 @@ export default function LoginForm() {
         style={styles.image}
       />
       {showEmailVerification ? (
-        <View style={{ paddingHorizontal: 24 }}>
+        <View>
           <ThemedText style={styles.title} type="defaultSemiBold">
             {t('verifyYourEmailToContinue')}
           </ThemedText>
@@ -137,16 +136,15 @@ export default function LoginForm() {
           </ThemedText>
           <View style={{ flexDirection: 'row', marginTop: 20 }}>
             <ThemedText style={styles.text}>
-              Si no te llegó el email,
+              Si no te llegó el email,{' '}
             </ThemedText>
             <ThemedText
               style={{ color: 'white', textDecorationLine: 'underline' }}
               onPress={onResendVerificatioEmail}
             >
-              {' '}
-              hacé click acá{' '}
+              hacé click acá
             </ThemedText>
-            <ThemedText style={styles.text}>y te lo</ThemedText>
+            <ThemedText style={styles.text}> y te lo</ThemedText>
           </View>
           <ThemedText style={styles.text}>volvemos a enviar</ThemedText>
           <View style={{ marginTop: 20 }}>
@@ -257,7 +255,7 @@ export default function LoginForm() {
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 24,
-    paddingHorizontal: 0,
+    paddingHorizontal: 24,
     flexGrow: 1,
     backgroundColor: '#3D9970',
   },
@@ -266,7 +264,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFF',
     marginBottom: 15,
-    textAlign: 'center',
   },
   text: {
     fontSize: 16,
@@ -283,7 +280,6 @@ const styles = StyleSheet.create({
   },
   form: {
     marginBottom: 24,
-    paddingHorizontal: 24,
   },
   formAction: {
     marginTop: 4,

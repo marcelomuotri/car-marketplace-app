@@ -28,7 +28,6 @@ export type ProductListProps = Pick<
 const Index: React.FC = () => {
   const { t } = useTranslation()
   const { userData } = useSelector((state: RootState) => state.auth)
-  console.log(userData)
 
   // Estado de filtros y visibilidad del modal de filtros
   const [filters, setFilters] = useState({
@@ -144,7 +143,6 @@ const Index: React.FC = () => {
   }
 
   const goToIdPage = (id: string) => {
-    console.log('gotoidpage')
     setIsSearchDrawerOpen(false)
     router.push({ pathname: 'productDetails/[id]', params: { id: id } })
   }
@@ -163,6 +161,7 @@ const Index: React.FC = () => {
         }
         setCursor={setCursor}
         uid={userData?.uid}
+        t={t}
       />
 
       <Input
@@ -171,7 +170,7 @@ const Index: React.FC = () => {
         inputStyle={[styles.inputStyle]}
         placeholder="Buscar"
         leftIcon={<SearchIcon />}
-        leftIconContainerStyle={{ marginRight: 15 }}
+        leftIconContainerStyle={{ marginRight: 6 }}
         onPress={onOpenSearchDrawer}
         value={search}
       />
@@ -218,13 +217,6 @@ const Index: React.FC = () => {
 
       <View style={styles.header}>
         <ThemedText type="title">{t('featuredProducts')} </ThemedText>
-        {/* <View style={styles.buttonContainer}>
-          <FilterButton title={t('sort')} />
-          <FilterButton
-            title={t('filter')}
-            filtersApplied={Object.keys(filters).length - 1}
-          />
-        </View> */}
       </View>
 
       <ProductList
@@ -265,9 +257,10 @@ const styles = StyleSheet.create({
   inputContainerStyle: {
     borderWidth: 1,
     borderColor: '#F0F2F1',
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    marginBottom: 10,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+    height: 40,
   },
   containerStyle: {
     paddingHorizontal: 0,

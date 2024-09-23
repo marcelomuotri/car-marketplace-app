@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
   categoryItem: {
     alignItems: 'center',
     width: 85,
-    height: 85,
   },
   iconContainer: {
     width: 40,
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   listContainer: {
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
 })
 

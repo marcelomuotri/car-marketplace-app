@@ -81,7 +81,7 @@ const Support = () => {
         </View>
         <View style={styles.buttonContainer}>
           <ThemedButton
-            title="Guardar"
+            title="Enviar consulta"
             onPress={handleSubmit(onCreateSupportQuery)}
           />
         </View>

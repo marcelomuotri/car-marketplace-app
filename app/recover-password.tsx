@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, View, Text, Image } from 'react-native'
+import { StyleSheet, View, Text, Image, SafeAreaView } from 'react-native'
 import { router } from 'expo-router'
 import { RootState } from '@/state/store'
 import { useSelector } from 'react-redux'
@@ -101,8 +101,8 @@ export default function RecoverPassword() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 24,
-    paddingHorizontal: 20,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
     flexGrow: 1,
     backgroundColor: '#3D9970',
   },
@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   image: {
-    marginTop: 20,
     width: 350,
     height: 150,
     justifyContent: 'center',

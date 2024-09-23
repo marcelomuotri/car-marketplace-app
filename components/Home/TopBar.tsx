@@ -8,12 +8,14 @@ import { CheckBox } from '@rneui/themed'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { competitionCategories } from '@/constants/Categories'
 import { useUpdateUser } from '@/state/api/userApi'
+import { TFunction } from 'i18next'
 
 interface TopBarProps {
   selectedCompetition: string
   setSelectedCompetition: (option: string) => void
   setCursor: any
   uid: string
+  t: TFunction
 }
 
 const TopBar = ({
@@ -21,6 +23,7 @@ const TopBar = ({
   selectedCompetition,
   setCursor,
   uid,
+  t,
 }: TopBarProps) => {
   const { updateUserData, isUpdating } = useUpdateUser()
   const [isVisible, setIsVisible] = useState(false)
@@ -71,7 +74,7 @@ const TopBar = ({
           ))}
         </BottomSheetDrawer>
         <ThemedText type="small" style={{ color: '#C8C8CB' }}>
-          Competicion
+          {t('competition')}
         </ThemedText>
         <TouchableOpacity
           style={styles.competitionContainer}

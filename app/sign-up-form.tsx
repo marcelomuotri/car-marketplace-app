@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,6 +20,10 @@ import { useTranslation } from 'react-i18next'
 import LoginButton from '@/components/Login/LoginButton'
 import Back from '@/components/Back'
 import { router } from 'expo-router'
+import * as Google from 'expo-auth-session/providers/google'
+import * as WebBrowser from 'expo-web-browser'
+import { auth } from '@/firebaseConfig'
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
 
 interface SignUpFieldsForm {
   email: string
@@ -34,11 +38,53 @@ export default function SignUpForm() {
     formState: { errors },
   } = useForm<SignUpFieldsForm>()
   const { t } = useTranslation()
-  const { createUser } = useAuthService()
+  const { createUser, createUserFromGoogle } = useAuthService()
   const { loading } = useSelector((state: RootState) => state.auth)
   const [sendEmailScreen, setSendEmailScreen] = useState(false)
+  const [isGoogleSignInInProgress, setGoogleSignInInProgress] = useState(false)
 
   useAuthRedirect()
+
+  WebBrowser.maybeCompleteAuthSession()
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  })
+
+  useEffect(() => {
+    const signInWithGoogle = async () => {
+      try {
+        const user = auth.currentUser
+
+        if (
+          !user &&
+          response?.type === 'success' &&
+          response.params?.id_token
+        ) {
+          const { id_token } = response.params
+          const credential = GoogleAuthProvider.credential(id_token)
+
+          const userCredential: any = await signInWithCredential(
+            auth,
+            credential,
+          )
+          if (userCredential) {
+            await createUserFromGoogle(userCredential)
+          }
+        }
+      } catch (error) {
+        console.error('Error durante la autenticación:', error)
+      } finally {
+        setGoogleSignInInProgress(false)
+      }
+    }
+
+    if (response?.type === 'success' && !isGoogleSignInInProgress) {
+      setGoogleSignInInProgress(true)
+      signInWithGoogle()
+    }
+  }, [response])
 
   const handleCreateAccount: SubmitHandler<SignUpFieldsForm> = async (data) => {
     const { email, password, confirmPassword } = data
@@ -47,6 +93,10 @@ export default function SignUpForm() {
     }
     createUser({ email, password })
     setSendEmailScreen(true)
+  }
+
+  const signInWithGoogle = () => {
+    promptAsync()
   }
 
   const handleBackHome = () => {
@@ -63,7 +113,6 @@ export default function SignUpForm() {
         <Image
           source={require('../assets/images/logo.jpeg')}
           style={{
-            marginTop: 10,
             width: 350,
             height: 150,
             justifyContent: 'center',
@@ -162,6 +211,33 @@ export default function SignUpForm() {
                   />
                 </View>
               </View>
+              <View
+                style={{
+                  marginVertical: 20,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 15,
+                }}
+              >
+                <View
+                  style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                ></View>
+                <View>
+                  <Text
+                    style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}
+                  >
+                    {t('or')}
+                  </Text>
+                </View>
+                <View
+                  style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                ></View>
+              </View>
+              <LoginButton
+                googleIcon
+                title={t('googleLoginButton')}
+                onPress={signInWithGoogle}
+              />
             </KeyboardAwareScrollView>
           </>
         )}
@@ -172,7 +248,7 @@ export default function SignUpForm() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 24,
+    paddingVertical: 30,
     flexGrow: 1,
     backgroundColor: '#3D9970',
     paddingHorizontal: 24,
@@ -182,7 +258,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFF',
     marginBottom: 15,
-    textAlign: 'center',
   },
   text: {
     fontSize: 16,
@@ -194,7 +269,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   formAction: {
-    marginBottom: 16,
+    marginBottom: 0,
   },
   formFooter: {
     fontSize: 15,

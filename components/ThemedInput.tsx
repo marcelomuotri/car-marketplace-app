@@ -60,7 +60,6 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
             }
             inputContainerStyle={styles.inputContainerStyle}
             containerStyle={styles.containerStyle}
-            //inputStyle={styles.inputStyle}
             inputStyle={[
               styles.inputStyle,
               !!numberOfLines && styles.multilineInputStyle,
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: '60%',
+    width: '70%',
     maxHeight: '60%',
     backgroundColor: 'white',
     borderRadius: 10,

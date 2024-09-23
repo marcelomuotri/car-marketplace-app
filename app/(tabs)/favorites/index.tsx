@@ -39,7 +39,6 @@ const FavoritesScreen = () => {
     ids: productIds,
     populate: ['title', 'price', 'photo1Url', 'currency', 'visitors'],
   })
-  console.log(products)
   const productsWithFavoriteId =
     products?.map((product: ProductSummary) => ({
       ...product,
