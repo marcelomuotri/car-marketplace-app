@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ThemedText } from '../ThemedText'
-import { View, Image, StyleSheet } from 'react-native'
+import { View, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native'
 import SecondaryButton from '../Home/SecondaryButton'
 import { useTranslation } from 'react-i18next'
 import { UserData } from '@/types'
@@ -23,13 +23,17 @@ const VendorInfo = ({
   const { t } = useTranslation()
   const styles = createStyles(showBorder)
 
+  const [modalVisible, setModalVisible] = useState(false) // Estado para controlar el modal
+
   const renderAvatar = () => {
     if (user?.photoToShowUrl) {
       return (
-        <Image
-          source={{ uri: user.photoToShowUrl }}
-          style={styles.photoToShow}
-        />
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Image
+            source={{ uri: user.photoToShowUrl }}
+            style={styles.photoToShow}
+          />
+        </TouchableOpacity>
       )
     } else {
       return (
@@ -39,6 +43,7 @@ const VendorInfo = ({
       )
     }
   }
+
   return (
     <>
       <View style={styles.vendorInfo}>
@@ -58,6 +63,26 @@ const VendorInfo = ({
           <SecondaryButton title={t('seeProfile')} onPress={openDrawer} />
         )}
       </View>
+
+      {/* Modal para mostrar la imagen en grande */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalBackground}
+            onPress={() => setModalVisible(false)}
+          >
+            <Image
+              source={{ uri: user?.photoToShowUrl }}
+              style={styles.enlargedPhoto}
+            />
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </>
   )
 }
@@ -102,6 +127,25 @@ const createStyles = (showBorder: boolean) => {
     },
     zone: {
       fontSize: 14,
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalBackground: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    enlargedPhoto: {
+      width: 300,
+      height: 300,
+      borderRadius: 8,
+      borderWidth: 2,
+      borderColor: '#ffffff',
     },
   })
 }

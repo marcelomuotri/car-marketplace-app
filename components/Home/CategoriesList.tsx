@@ -8,12 +8,14 @@ interface CategoriesListProps {
   setFilters: (filters: any) => void
   categoriesToShow: any
   setCursor: any
+  setFiltersApplied: (number: number) => void
 }
 
 const CategoriesList = ({
   setFilters,
   categoriesToShow,
   setCursor,
+  setFiltersApplied,
 }: CategoriesListProps) => {
   const { t } = useTranslation()
 

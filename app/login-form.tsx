@@ -139,7 +139,7 @@ export default function LoginForm() {
               Si no te llegó el email,{' '}
             </ThemedText>
             <ThemedText
-              style={{ color: 'white', textDecorationLine: 'underline' }}
+              style={[styles.text, { textDecorationLine: 'underline' }]}
               onPress={onResendVerificatioEmail}
             >
               hacé click acá

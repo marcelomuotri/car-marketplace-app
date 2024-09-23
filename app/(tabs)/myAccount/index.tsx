@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native'
+import { Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
@@ -133,7 +134,10 @@ const MyAccount = () => {
           </View>
           <View
             style={{
-              borderWidth: 0.3,
+              borderWidth: Platform.select({
+                android: 0.4,
+                ios: 0.5,
+              }),
               borderColor: '#E3E3E3',
               marginBottom: 20,
             }}

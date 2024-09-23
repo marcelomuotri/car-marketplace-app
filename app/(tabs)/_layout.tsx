@@ -34,8 +34,9 @@ export default function AppLayout() {
         tabBarStyle: Platform.select({
           ios: {
             backgroundColor: 'white',
-            height: 75,
-            paddingBottom: 10,
+            height: 100,
+            paddingBottom: 30,
+            paddingTop: 12,
           },
           android: {
             backgroundColor: 'white',

@@ -1,7 +1,15 @@
-import React from 'react'
-import { View, Text, TextInput, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome' // Asegúrate de instalar react-native-vector-icons
 import { ThemedText } from './ThemedText'
+import EyeClosedIcon from '@/assets/icons/EyeCloseIcon'
+import EyeOpenIcon from '@/assets/icons/EyeOpenIcon'
 
 interface CustomTextInputProps {
   label: string
@@ -19,10 +27,12 @@ const CustomTextInput = ({
   onChangeText,
   value,
   placeholder,
-  secureTextEntry,
+  secureTextEntry = false,
   error,
   iconName,
 }: CustomTextInputProps) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry)
+
   const getErrorMessage = (type: string) => {
     let errorMessage = ''
     switch (type) {
@@ -54,13 +64,30 @@ const CustomTextInput = ({
         )}
         <TextInput
           allowFontScaling={false}
-          style={[styles.input, iconName ? { paddingLeft: 40 } : null]}
+          style={[
+            styles.input,
+            iconName ? { paddingLeft: 40 } : null,
+            secureTextEntry ? { paddingRight: 40 } : null,
+          ]}
           onChangeText={onChangeText}
           value={value}
           placeholder={placeholder}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={!isPasswordVisible && secureTextEntry} // Utiliza el estado local para controlar la visibilidad
           placeholderTextColor={'white'}
         />
+        {secureTextEntry && (
+          <TouchableOpacity
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            style={styles.eyeIconContainer}
+          >
+            {/* {isPasswordVisible ? <EyeOpenIcon /> : <EyeClosedIcon />} */}
+            <Icon
+              name={isPasswordVisible ? 'eye-slash' : 'eye'}
+              size={20}
+              color="white"
+            />
+          </TouchableOpacity>
+        )}
       </View>
       {error && (
         <Text style={styles.errorText}>
@@ -97,8 +124,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-    top: 15,
+    top: 10,
     left: 10,
+  },
+  eyeIconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10, // Posición del ícono del ojo a la derecha del input
   },
   errorText: {
     color: 'red',

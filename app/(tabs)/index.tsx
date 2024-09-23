@@ -19,6 +19,8 @@ import { Product } from '@/types'
 import { router } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
+import FilterButton from '@/components/FilterButton'
+import { countAppliedFilters, cleanFilters } from '@/components/utils/functions'
 
 export type ProductListProps = Pick<
   Product,
@@ -39,6 +41,10 @@ const Index: React.FC = () => {
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [filtersApplied, setFiltersApplied] = useState(0)
+
+  // Estado para manejar productos cargados y el cursor para la paginación
+  const [cursor, setCursor] = useState(null)
 
   // Configuración de categorías a mostrar
   const competitionCategoryToShow = competitionCategories.filter(
@@ -68,18 +74,6 @@ const Index: React.FC = () => {
     productFilters.subCategory = filters.subCategory
   }
 
-  // Estado para manejar productos cargados y el cursor para la paginación
-  const [cursor, setCursor] = useState(null)
-
-  const cleanFilters = (filters: any) => {
-    return Object.keys(filters).reduce((acc, key) => {
-      if (filters[key] != null) {
-        acc[key] = filters[key]
-      }
-      return acc
-    }, {})
-  }
-
   useEffect(() => {
     const selectedCategoryLabel = categoriesToShow
       .find((category) => category.id === filters.category)
@@ -99,6 +93,11 @@ const Index: React.FC = () => {
       return updatedFilters
     })
   }, [search, selectedCategoryLabel, filters.subCategory])
+
+  useEffect(() => {
+    //aca cuenta los filtros que tiene aplicados excluyendo titulo y competicion
+    setFiltersApplied(countAppliedFilters(filters))
+  }, [filters])
 
   // Consulta de productos con límite de 2 por llamada
   const { products, isLoading, error, refetch } = useGetAllProducts({
@@ -122,6 +121,7 @@ const Index: React.FC = () => {
 
   // Aplicar los filtros seleccionados
   const applyFilters = (newFilters: any) => {
+    //esto aplica los filtros del modal
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
@@ -147,7 +147,6 @@ const Index: React.FC = () => {
     router.push({ pathname: 'productDetails/[id]', params: { id: id } })
   }
 
-  // Mostrar loader mientras se cargan los productos o las categorías
   if (isLoading || isLoadingCategories || !products || !categories) {
     return <Loader />
   }
@@ -157,7 +156,7 @@ const Index: React.FC = () => {
       <TopBar
         selectedCompetition={filters.competition}
         setSelectedCompetition={(competition) =>
-          setFilters((prev) => ({ ...prev, competition }))
+          setFilters((prev) => ({ ...prev, competition, category: null }))
         }
         setCursor={setCursor}
         uid={userData?.uid}
@@ -213,20 +212,21 @@ const Index: React.FC = () => {
         setFilters={setFilters}
         categoriesToShow={categoriesToShow}
         setCursor={setCursor}
+        setFiltersApplied={setFiltersApplied}
       />
-
       <View style={styles.header}>
         <ThemedText type="title">{t('featuredProducts')} </ThemedText>
+        <FilterButton
+          title="Filtros"
+          filtersApplied={filtersApplied}
+          onPress={() => setIsFilterModalVisible(true)}
+        />
       </View>
-
       <ProductList
-        filters={filters}
         setCursor={setCursor}
         products={products}
-        filtersApplied={Object.keys(filters).length - 1}
         refetch={refetch}
       />
-
       <FiltersModal
         filters={filters}
         categoriesToShow={categoriesToShow}
@@ -234,6 +234,7 @@ const Index: React.FC = () => {
         toggleModal={toggleModal}
         categories={categories}
         applyFilters={applyFilters}
+        t={t}
       />
     </BasicLayout>
   )

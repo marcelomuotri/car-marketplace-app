@@ -9,20 +9,11 @@ import EmptyList from '@/components/emptyList/EmptyList'
 
 interface ListProductProps {
   products: Product[]
-  filtersApplied: number
   refetch: any
-  loadMoreProducts: () => void // Nueva prop para cargar más productos
-  isLoadingMore: boolean
   setCursor: any
 }
 
-const ProductList = ({
-  products,
-  filtersApplied,
-  refetch,
-  setCursor,
-  filters,
-}: ListProductProps) => {
+const ProductList = ({ products, refetch, setCursor }: ListProductProps) => {
   const { t } = useTranslation()
   const [refreshing, setRefreshing] = React.useState(false)
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, View, Text, Image, SafeAreaView } from 'react-native'
+import { StyleSheet, View, Text, Image } from 'react-native'
 import { router } from 'expo-router'
 import { RootState } from '@/state/store'
 import { useSelector } from 'react-redux'
@@ -20,6 +20,7 @@ interface RecoverFormFieldsProps {
 export default function RecoverPassword() {
   const { t } = useTranslation()
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [localLoading, setLocalLoading] = useState(false)
 
   const {
     handleSubmit,
@@ -28,21 +29,32 @@ export default function RecoverPassword() {
   } = useForm<RecoverFormFieldsProps>()
 
   const { loading } = useSelector((state: RootState) => state.auth)
-  const resetPassword = (data: { email: string }) => {
-    sendPasswordResetEmail(auth, data.email)
-      .then(() => {
-        setShowConfirmation(true)
-      })
-      .catch(() => {
-        // Manejar errores (como formatos de correo no válidos, problemas de red, etc.)
-      })
+
+  const resetPassword = async (data: { email: string }) => {
+    setLocalLoading(true) // Mostrar el Loader
+    try {
+      await sendPasswordResetEmail(auth, data.email)
+      setShowConfirmation(true)
+    } catch (error) {
+      console.error('Error sending password reset email:', error)
+      // Manejar errores (como formatos de correo no válidos, problemas de red, etc.)
+    } finally {
+      setLocalLoading(false) // Ocultar el Loader
+    }
   }
 
   const goToHome = () => {
     router.replace('/')
   }
 
-  if (loading) return <Loader />
+  // Si loading o localLoading es true, mostrar el Loader
+  if (loading || localLoading)
+    return (
+      <View style={styles.container}>
+        <Loader />
+      </View>
+    )
+
   return (
     <View style={styles.container}>
       <Back />

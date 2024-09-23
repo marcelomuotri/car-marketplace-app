@@ -11,6 +11,7 @@ import { Input } from '@rneui/themed'
 import { Controller, Control } from 'react-hook-form'
 import { ThemedText } from './ThemedText'
 import ArrowDownIcon from '@/assets/icons/ArrowDownIcon'
+import { capitalizeFirstLetter } from './utils/formatter'
 
 interface ThemedInputProps {
   name: string
@@ -76,7 +77,9 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
               style={styles.selectButton}
             >
               <ThemedText style={styles.labelText}>
-                {field.value || selectedLabel || placeholder}
+                {capitalizeFirstLetter(
+                  field.value || selectedLabel || placeholder,
+                )}
               </ThemedText>
               <ArrowDownIcon />
             </TouchableOpacity>
@@ -99,7 +102,7 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
                         }}
                         style={styles.optionItem}
                       >
-                        <Text>{option.label}</Text>
+                        <Text>{capitalizeFirstLetter(option.label)}</Text>
                       </TouchableOpacity>
                     ))}
                   </ScrollView>

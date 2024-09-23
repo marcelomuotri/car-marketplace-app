@@ -2,7 +2,7 @@
   "expo": {
     "name": "2y4 Race",
     "slug": "car-marketplace-app",
-    "version": "1.0.3",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon1.png",
     "scheme": "car-marketplace-app",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.carmarketplace.app"
+      "bundleIdentifier": "com.muotrimarcelo.carmarketplaceapp"
     },
     "android": {
       "versionCode": 5,
@@ -52,7 +52,15 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
