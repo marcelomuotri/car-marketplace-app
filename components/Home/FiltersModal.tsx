@@ -37,41 +37,27 @@ const FiltersModal = ({
   applyFilters,
   t,
 }: FiltersModalProps) => {
-  const { control, handleSubmit, setValue } = useForm<any>({
+  const { control, handleSubmit, setValue, reset } = useForm<any>({
     defaultValues: {
       category: filters?.category,
     },
   })
 
-  // useEffect(() => {
-  //   //esto no se si me va a servir para algo
-  //   setLocalFilters(filters)
-  // }, [filters])
-
   useEffect(() => {
-    if (filters?.category) {
-      setValue('category', filters.category)
-    }
-  }, [filters, setValue])
+    console.log(filters)
+    setValue('category', filters.category)
+  }, [filters, setValue, isVisible])
 
-  // const getValue = (filterValue: string, items: any[]) => {
-  //   return items.find((item) => item.id === filterValue)
-  // }
-
-  // const selectedCategoryValue = getValue(
-  //   localFilters.category,
-  //   categoriesToShow,
-  // )
-
-  const subCategoriesToShow = categories[filters?.category]?.subCategories
+  const subCategoriesToShow = categories?.find(
+    (category: any) => category.name === filters?.category,
+  )?.subCategories
   // getOptions(
   //   selectedCategoryValue,
   //   categories,
   //   'subCategories',
   // )
-  console.log(categories[filters?.category])
-  console.log(filters.category)
-  console.log(categories)
+  console.log(subCategoriesToShow)
+  //console.log(categories.find((category) => category.name === 'accesorios'))
   //hacer un object.keys como en la web me parece
 
   // const selectedSubCategoryValue = getValue(
@@ -86,7 +72,7 @@ const FiltersModal = ({
   // )
 
   // const handleFilterChange = (key: string, value: string) => {
-  //   setLocalFilters((prevFilters) => ({
+  //   setFilters((prevFilters) => ({
   //     ...prevFilters,
   //     [key]: value,
   //   }))
@@ -122,6 +108,11 @@ const FiltersModal = ({
   // Añadir más casos si es necesario
   //}
 
+  const onCancelAndCloseModal = () => {
+    toggleModal()
+    reset()
+  }
+
   return (
     <Modal
       animationType="slide"
@@ -134,7 +125,7 @@ const FiltersModal = ({
           <ThemedText style={styles.modalTitle} type="title">
             Filtros
           </ThemedText>
-          <TouchableOpacity onPress={toggleModal}>
+          <TouchableOpacity onPress={onCancelAndCloseModal}>
             <CloseIcon />
           </TouchableOpacity>
         </View>
@@ -159,8 +150,8 @@ const FiltersModal = ({
             //esto lo haria con el watch o algo asi
             //onChange={(value) => handleFilterChange('subCategory', value)}
             options={subCategoriesToShow?.map((subCategory) => ({
-              label: subCategory.label,
-              value: subCategory.id,
+              label: subCategory,
+              value: subCategory,
             }))}
           />
           {/* {renderFieldVariant()} */}

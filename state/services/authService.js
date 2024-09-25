@@ -106,6 +106,7 @@ export const useAuthService = () => {
 
   const createUserFromGoogle = async (result) => {
     //TODO
+
     const isNewUser = result._tokenResponse.isNewUser
     if (isNewUser) {
       const userPayload = createUserPayload(result.user)
@@ -113,6 +114,19 @@ export const useAuthService = () => {
       saveUserToFirestore(userPayloadForFirebase, result.user.uid)
       //aca si tengo problemas puedo volver a ponerle el uid al userData para ver si se arregla
     }
+    // try {
+    //   const uid = result.user.uid
+    //   const userDocRef = doc(db, 'users', uid)
+    //   const userDoc = await getDoc(userDocRef)
+
+    //   if (!userDoc.exists()) {
+    //     const userPayload = createUserPayload(result.user)
+    //     const userPayloadForFirebase = convertIsoStringToTimestamp(userPayload)
+    //     await saveUserToFirestore(userPayloadForFirebase, uid)
+    //   }
+    // } catch (error) {
+    //   console.error('Error creating user from Google:', error)
+    // }
   }
 
   const saveUserToFirestore = async (userPayload, uid) => {

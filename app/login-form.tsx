@@ -68,6 +68,7 @@ export default function LoginForm() {
             credential,
           )
           if (userCredential) {
+            //no esta creando en usuario en la tabla users
             await createUserFromGoogle(userCredential)
           }
         }

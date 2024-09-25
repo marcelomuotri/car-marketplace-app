@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   StyleSheet,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import { Input } from '@rneui/themed'
 import { Controller, Control } from 'react-hook-form'
@@ -89,25 +90,29 @@ const ThemedInput: React.FC<ThemedInputProps> = ({
               animationType="slide"
               onRequestClose={() => setModalVisible(false)}
             >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <ScrollView>
-                    {options.map((option) => (
-                      <TouchableOpacity
-                        key={option.value}
-                        onPress={() => {
-                          setSelectedLabel(option.label) // Muestra el label en la interfaz
-                          field.onChange(option.value) // Guarda el value en la base de datos
-                          setModalVisible(false)
-                        }}
-                        style={styles.optionItem}
-                      >
-                        <Text>{capitalizeFirstLetter(option.label)}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+              <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                <View style={styles.modalContainer}>
+                  <TouchableWithoutFeedback>
+                    <View style={styles.modalContent}>
+                      <ScrollView>
+                        {options.map((option) => (
+                          <TouchableOpacity
+                            key={option.value}
+                            onPress={() => {
+                              setSelectedLabel(option.label) // Display the label in the UI
+                              field.onChange(option.value) // Save the value in the form
+                              setModalVisible(false)
+                            }}
+                            style={styles.optionItem}
+                          >
+                            <Text>{capitalizeFirstLetter(option.label)}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  </TouchableWithoutFeedback>
                 </View>
-              </View>
+              </TouchableWithoutFeedback>
             </Modal>
           </>
         )
@@ -164,14 +169,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: '70%',
+    width: '90%',
     maxHeight: '60%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
   },
   optionItem: {
+    width: '100%',
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',

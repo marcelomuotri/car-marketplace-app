@@ -24,10 +24,12 @@ const EmptyList = ({ title, subTitle }: EmptyListProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: 'white',
     alignItems: 'center',
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     gap: 10,
-    marginTop: 30,
+    paddingTop: 30,
   },
   title: {
     fontSize: 18,

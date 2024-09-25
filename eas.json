@@ -23,6 +23,11 @@
     "production": {
       "android": {
         "serviceAccountKeyPath": "./keys/marketplace-f65c0-600db714147a.json"
+      },
+      "ios": {
+        "appleId": "proyecto.competicion@gmail.com",
+        "ascAppId": "6714476186",
+        "appleTeamId": "6QFT5898Z7"
       }
     }
   }

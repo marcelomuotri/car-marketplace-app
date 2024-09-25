@@ -23,7 +23,6 @@ import { useAuthService } from '@/state/services/authService'
 import BottomSuccessDrawer from '@/components/BottomSuccessDrawer/BottomSuccessDrawer'
 import { BuyerProfile } from '@/types'
 import ExitIcon from '@/assets/icons/ExitIcon'
-import { Link } from 'expo-router'
 import ArrowRight from '@/assets/icons/ArrowRight'
 
 const MyAccount = () => {
@@ -37,12 +36,12 @@ const MyAccount = () => {
 
   const { control, handleSubmit } = useForm<BuyerProfile>({
     defaultValues: {
-      name: userData?.name,
-      surname: userData?.surname,
-      phoneNumber: userData?.phoneNumber,
-      address: userData?.address,
-      city: userData?.city,
-      state: userData?.state,
+      name: userData?.name || '',
+      surname: userData?.surname || '',
+      phoneNumber: userData?.phoneNumber || '',
+      address: userData?.address || '',
+      city: userData?.city || '',
+      state: userData?.state || '',
     },
   })
 
@@ -121,7 +120,9 @@ const MyAccount = () => {
                 style={{ padding: 0 }}
               />
             </View>
-            <ThemedText style={{ fontWeight: 800 }}>************</ThemedText>
+            <ThemedText style={{ fontWeight: 800, marginBottom: 8 }}>
+              ************
+            </ThemedText>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <ExitIcon />
               <SecondaryButton
@@ -135,7 +136,7 @@ const MyAccount = () => {
           <View
             style={{
               borderWidth: Platform.select({
-                android: 0.4,
+                android: 0.3,
                 ios: 0.5,
               }),
               borderColor: '#E3E3E3',

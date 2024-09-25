@@ -58,10 +58,6 @@ const VendorInfo = ({
             </ThemedText>
           </View>
         </View>
-
-        {showProfileButton && (
-          <SecondaryButton title={t('seeProfile')} onPress={openDrawer} />
-        )}
       </View>
 
       {/* Modal para mostrar la imagen en grande */}

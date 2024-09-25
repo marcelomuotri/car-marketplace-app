@@ -16,6 +16,19 @@ export const useGetUserById = (id: string) => {
   }
 }
 
+export const useGetUserByEmail = (email: string) => {
+  const { data, error, isLoading } = useGetEntitiesQuery({
+    collectionPath: base,
+    filters: { userEmail: email },
+  })
+
+  return {
+    user: data ? data[0] : null,
+    isLoadingUser: isLoading,
+    error,
+  }
+}
+
 export const useUpdateUser = () => {
   const [updateUser, { isLoading: isUpdating, error }] =
     useUpdateEntityMutation()
