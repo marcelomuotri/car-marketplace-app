@@ -8,8 +8,6 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome' // Asegúrate de instalar react-native-vector-icons
 import { ThemedText } from './ThemedText'
-import EyeClosedIcon from '@/assets/icons/EyeCloseIcon'
-import EyeOpenIcon from '@/assets/icons/EyeOpenIcon'
 
 interface CustomTextInputProps {
   label: string

@@ -1,4 +1,4 @@
-import { Redirect, Tabs } from 'expo-router'
+import { Redirect, Tabs, usePathname } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import HomeIcon from '@/assets/icons/HomeIcon'
@@ -8,12 +8,32 @@ import SupportIcon from '@/assets/icons/SupportIcon'
 import AccountIcon from '@/assets/icons/AccountIcon'
 import { Platform } from 'react-native'
 import Loader from '@/components/Loader'
+import { useEffect } from 'react'
+import * as Linking from 'expo-linking'
+import { router } from 'expo-router'
+import useDeepLink from '@/state/services/useDeeplink'
 
 export default function AppLayout() {
   const tabBarInactiveTintColor = useThemeColor({}, 'tabIconDefault')
   const tabBarActiveTintColor = useThemeColor({}, 'tabIconSelected')
   // Obtener el estado de autenticación
   const { user, loading } = useSelector((state: RootState) => state.auth)
+  const { linkedURL, resetURL } = useDeepLink()
+  const currentPath = usePathname() // Obtener la ruta actual
+
+  useEffect(() => {
+    if (linkedURL) {
+      const parsedURL = Linking.parse(linkedURL) // Decodifica la URL
+
+      // Verificar si la ruta del deep link es diferente de la ruta actual
+      if (parsedURL?.path && parsedURL.path !== currentPath) {
+        router.push(parsedURL.path)
+      }
+
+      // Reseteamos el estado de la URL una vez procesada
+      resetURL() // Aquí es donde linkedURL se vuelve null
+    }
+  }, [linkedURL, resetURL, currentPath])
 
   // Only require authentication within the (app) group's layout as users
   // need to be able to access the (auth) group and sign in again.

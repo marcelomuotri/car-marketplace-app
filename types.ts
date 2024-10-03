@@ -38,6 +38,7 @@ export interface AuthState {
   loading: boolean
   error: string | null
   userData: UserData
+  reauthenticating: boolean
 }
 
 export interface SignInPayload {

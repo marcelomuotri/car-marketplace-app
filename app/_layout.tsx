@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
 import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
+import { getI18n, initReactI18next } from 'react-i18next'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
@@ -21,7 +21,6 @@ import { Provider } from 'react-redux'
 import es from '../i18n/es.json'
 import 'intl-pluralrules'
 import { Stack } from 'expo-router/stack'
-import { usePathname, useRouter } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -45,20 +44,12 @@ i18n.use(initReactI18next).init({
 })
 
 export default function RootLayout() {
-  const pathname = usePathname()
-  const router = useRouter()
   const colorScheme = useColorScheme()
   const [loaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_700Bold,
   })
-  // React.useEffect(() => {
-  //   if (pathname === '/oauthredirect') {
-  //     // Redirigir directamente a la ruta principal "/"
-  //     router.replace('/')
-  //   }
-  // }, [pathname])
 
   useEffect(() => {
     if (loaded) {

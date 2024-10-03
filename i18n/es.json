@@ -76,5 +76,8 @@
   "weSentYouAVerificationEmail": "Te mandamos un email para verificar tu cuenta. Hacé click en el enlace para confirmarla y volvé cuando termines.",
   "back": "Volver",
   "verifyYourEmailToContinue": "Verificá tu email para ingresar",
-  "competition": "Competición"
+  "competition": "Competición",
+  "price": "Precio",
+  "deleteMyAccount": "Borrar mi cuenta",
+  "deleteAccountConfirmation": "¿Estás seguro que querés borrar tu cuenta?"
 }

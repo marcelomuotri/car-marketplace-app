@@ -12,7 +12,7 @@ import { useAuthService } from '@/state/services/authService'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import ThemedTextInput from '../components/ThemedTextInput'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import Loader from '@/components/Loader'
 import { ThemedText } from '@/components/ThemedText'
@@ -24,6 +24,11 @@ import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
 import { auth } from '@/firebaseConfig'
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
+import {
+  loginFailure,
+  loginLoading,
+  logoutSuccess,
+} from '@/state/slices/authSlice'
 
 interface SignUpFieldsForm {
   email: string
@@ -38,8 +43,9 @@ export default function SignUpForm() {
     formState: { errors },
   } = useForm<SignUpFieldsForm>()
   const { t } = useTranslation()
+  const dispatch = useDispatch()
   const { createUser, createUserFromGoogle } = useAuthService()
-  const { loading } = useSelector((state: RootState) => state.auth)
+  const { loading, error } = useSelector((state: RootState) => state.auth)
   const [sendEmailScreen, setSendEmailScreen] = useState(false)
   const [isGoogleSignInInProgress, setGoogleSignInInProgress] = useState(false)
 
@@ -88,11 +94,29 @@ export default function SignUpForm() {
 
   const handleCreateAccount: SubmitHandler<SignUpFieldsForm> = async (data) => {
     const { email, password, confirmPassword } = data
+
+    // Inicia el loading
+    dispatch(loginLoading())
+
     if (password !== confirmPassword) {
-      return alert('Las contraseñas no coinciden')
+      dispatch(loginFailure('Las contraseñas no coinciden'))
+      return
     }
-    createUser({ email, password })
-    setSendEmailScreen(true)
+
+    try {
+      const user = await createUser({ email, password })
+
+      if (user) {
+        setSendEmailScreen(true)
+      } else {
+        dispatch(loginFailure('Este email ya está en uso'))
+      }
+    } catch (error) {
+      dispatch(loginFailure('Este email ya está en uso'))
+    } finally {
+      // Detiene el loading después de que se ha procesado el estado
+      dispatch(logoutSuccess())
+    }
   }
 
   const signInWithGoogle = () => {
@@ -102,140 +126,145 @@ export default function SignUpForm() {
   const handleBackHome = () => {
     router.replace('/')
   }
-  if (loading) {
-    return <Loader />
-  }
 
   return (
     <View style={styles.container}>
-      <Back />
-      <Image
-        source={require('../assets/images/logo.jpeg')}
-        style={{
-          width: 350,
-          height: 150,
-          justifyContent: 'center',
-          alignSelf: 'center',
-          borderRadius: 6,
-        }}
-      />
-      {sendEmailScreen ? (
-        <View>
-          <ThemedText style={styles.title} type="defaultSemiBold">
-            {t('verifyYourAccount')}
-          </ThemedText>
-          <ThemedText style={styles.text}>
-            {t('weSentYouAVerificationEmail')}
-          </ThemedText>
-          <View style={styles.formAction}>
-            <LoginButton
-              title={t('back')}
-              onPress={handleSubmit(handleBackHome)}
-            />
-          </View>
-        </View>
+      {loading ? (
+        <Loader />
       ) : (
         <>
-          <ThemedText style={styles.title} type="defaultSemiBold">
-            {t('registerAnAccount')}
-          </ThemedText>
-          <KeyboardAwareScrollView>
-            <View style={styles.form}>
-              <View style={styles.input}>
-                <Controller
-                  name="email"
-                  control={control}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                      message: 'invalid email address',
-                    },
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <ThemedTextInput
-                      label="Email"
-                      onChangeText={onChange}
-                      value={value}
-                      placeholder=""
-                      error={errors.email}
-                    />
-                  )}
-                />
-              </View>
-              <View style={styles.input}>
-                <Controller
-                  name="password"
-                  control={control}
-                  rules={{
-                    required: true,
-                    minLength: 6,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <ThemedTextInput
-                      label="Contraseña"
-                      onChangeText={onChange}
-                      value={value}
-                      placeholder=""
-                      secureTextEntry
-                      error={errors.password}
-                    />
-                  )}
-                />
-              </View>
-              <View style={styles.input}>
-                <Controller
-                  name="confirmPassword"
-                  control={control}
-                  rules={{
-                    required: true,
-                    minLength: 6,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <ThemedTextInput
-                      label="Repetir contraseña"
-                      onChangeText={onChange}
-                      value={value}
-                      placeholder=""
-                      secureTextEntry
-                      error={errors.confirmPassword}
-                    />
-                  )}
-                />
-              </View>
+          <Back />
+          <Image
+            source={require('../assets/images/logo.jpeg')}
+            style={{
+              width: 350,
+              height: 150,
+              justifyContent: 'center',
+              alignSelf: 'center',
+              borderRadius: 6,
+            }}
+          />
+          {sendEmailScreen ? (
+            <View>
+              <ThemedText style={styles.title} type="defaultSemiBold">
+                {t('verifyYourAccount')}
+              </ThemedText>
+              <ThemedText style={styles.text}>
+                {t('weSentYouAVerificationEmail')}
+              </ThemedText>
               <View style={styles.formAction}>
                 <LoginButton
-                  title={'Registrar cuenta'}
-                  onPress={handleSubmit(handleCreateAccount)}
+                  title={t('back')}
+                  onPress={handleSubmit(handleBackHome)}
                 />
               </View>
             </View>
-            <View
-              style={{
-                marginVertical: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 15,
-              }}
-            >
-              <View
-                style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
-              ></View>
-              <View>
-                <Text style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}>
-                  {t('or')}
-                </Text>
-              </View>
-              <View
-                style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
-              ></View>
-            </View>
-            <LoginButton
-              googleIcon
-              title={t('registerWithGoogle')}
-              onPress={signInWithGoogle}
-            />
-          </KeyboardAwareScrollView>
+          ) : (
+            <>
+              <ThemedText style={styles.title} type="defaultSemiBold">
+                {t('registerAnAccount')}
+              </ThemedText>
+              <KeyboardAwareScrollView>
+                <View style={styles.form}>
+                  <View style={styles.input}>
+                    <Controller
+                      name="email"
+                      control={control}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          message: 'invalid email address',
+                        },
+                      }}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <ThemedTextInput
+                          label="Email"
+                          onChangeText={onChange}
+                          value={value}
+                          placeholder=""
+                          error={errors.email}
+                        />
+                      )}
+                    />
+                  </View>
+                  <View style={styles.input}>
+                    <Controller
+                      name="password"
+                      control={control}
+                      rules={{
+                        required: true,
+                        minLength: 6,
+                      }}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <ThemedTextInput
+                          label="Contraseña"
+                          onChangeText={onChange}
+                          value={value}
+                          placeholder=""
+                          secureTextEntry
+                          error={errors.password}
+                        />
+                      )}
+                    />
+                  </View>
+                  <View style={styles.input}>
+                    <Controller
+                      name="confirmPassword"
+                      control={control}
+                      rules={{
+                        required: true,
+                        minLength: 6,
+                      }}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <ThemedTextInput
+                          label="Repetir contraseña"
+                          onChangeText={onChange}
+                          value={value}
+                          placeholder=""
+                          secureTextEntry
+                          error={errors.confirmPassword}
+                        />
+                      )}
+                    />
+                  </View>
+                  <View style={styles.formAction}>
+                    <LoginButton
+                      title={'Registrar cuenta'}
+                      onPress={handleSubmit(handleCreateAccount)}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    marginVertical: 20,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 15,
+                  }}
+                >
+                  <View
+                    style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                  ></View>
+                  <View>
+                    <Text
+                      style={{ color: '#FFF', fontSize: 20, marginBottom: 5 }}
+                    >
+                      {t('or')}
+                    </Text>
+                  </View>
+                  <View
+                    style={{ flex: 1, height: 1.5, backgroundColor: '#FFF' }}
+                  ></View>
+                </View>
+                <LoginButton
+                  googleIcon
+                  title={t('registerWithGoogle')}
+                  onPress={signInWithGoogle}
+                />
+              </KeyboardAwareScrollView>
+            </>
+          )}
         </>
       )}
     </View>

@@ -13,6 +13,8 @@ export const productsApi = createApi({
         populate = [],
         limitCount = 30,
         cursor = null,
+        orderByField,
+        orderDirection,
       }) => ({
         method: 'GET',
         path: collectionPath,
@@ -20,6 +22,8 @@ export const productsApi = createApi({
         populate,
         limitCount,
         cursor,
+        orderByField,
+        orderDirection,
       }),
       serializeQueryArgs: ({ endpointName, queryArgs }) => {
         const { collectionPath, filters } = queryArgs

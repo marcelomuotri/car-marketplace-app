@@ -31,11 +31,13 @@ const Index: React.FC = () => {
   const { t } = useTranslation()
   const { userData } = useSelector((state: RootState) => state.auth)
 
+  interface Filters {
+    competition: string // Aquí defines que competition es un string
+    [key: string]: string | null | undefined // Cualquier otra propiedad puede ser string, null o undefined
+  }
   // Estado de filtros y visibilidad del modal de filtros
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     competition: userData?.favoriteCompetition || 'auto',
-    category: null,
-    subCategory: null,
   })
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
@@ -82,24 +84,17 @@ const Index: React.FC = () => {
     setFilters((prevFilters: any) => {
       const updatedFilters = {
         ...prevFilters,
-        competition: filters.competition, // Aseguramos que competition siempre sea un array
+        competition: filters.competition,
         category: selectedCategoryLabel || prevFilters.category,
         subCategory: filters.subCategory || prevFilters.subCategory,
       }
 
-      // Si el campo de búsqueda tiene valor, lo establecemos, si no, lo dejamos en null
       updatedFilters.title = search && search.trim() !== '' ? search : null
 
       return updatedFilters
     })
   }, [search, selectedCategoryLabel, filters.subCategory])
 
-  useEffect(() => {
-    //aca cuenta los filtros que tiene aplicados excluyendo titulo y competicion
-    setFiltersApplied(countAppliedFilters(filters))
-  }, [filters])
-
-  // Consulta de productos con límite de 2 por llamada
   const { products, isLoading, error, refetch } = useGetAllProducts({
     populate: ['title', 'price', 'photo1Url', 'currency'],
     filters: cleanFilters({
@@ -111,35 +106,40 @@ const Index: React.FC = () => {
     cursor,
   })
 
-  // Obtener categorías
+  useEffect(() => {
+    setFiltersApplied(countAppliedFilters(filters))
+  }, [filters])
+
   const { categories, isLoadingCategories } = useGetAllCategories()
 
-  // Alternar visibilidad del modal de filtros
   const toggleModal = () => {
     setIsFilterModalVisible(!isFilterModalVisible)
   }
 
-  // Aplicar los filtros seleccionados
   const applyFilters = (newFilters: any) => {
-    //esto aplica los filtros del modal
+    if (newFilters.brandName) {
+      newFilters.brandName = newFilters.brandName.toLowerCase()
+    }
+    if (newFilters.modelName) {
+      newFilters.modelName = newFilters.modelName.toLowerCase()
+    }
+
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
     }))
+
     setIsFilterModalVisible(false)
   }
 
   const onOpenSearchDrawer = () => {
     setIsSearchDrawerOpen(true)
 
-    // Reiniciar el filtro de categoría al abrir el buscador
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      category: null, // O reiniciar cualquier otro filtro que necesites
+    setFilters(({ competition }) => ({
+      competition,
     }))
 
-    setCursor(null) // Reiniciar el cursor también si es necesario
-    refetch()
+    setCursor(null)
   }
 
   const goToIdPage = (id: string) => {
@@ -147,7 +147,7 @@ const Index: React.FC = () => {
     router.push({ pathname: 'productDetails/[id]', params: { id: id } })
   }
 
-  if (isLoading || isLoadingCategories || !products || !categories) {
+  if (isLoadingCategories || !products || !categories) {
     return <Loader />
   }
 
@@ -155,9 +155,11 @@ const Index: React.FC = () => {
     <BasicLayout>
       <TopBar
         selectedCompetition={filters.competition}
-        setSelectedCompetition={(competition) =>
-          setFilters((prev) => ({ ...prev, competition, category: null }))
-        }
+        setSelectedCompetition={(competition) => {
+          setFilters({
+            competition,
+          })
+        }}
         setCursor={setCursor}
         uid={userData?.uid}
         t={t}
@@ -193,10 +195,7 @@ const Index: React.FC = () => {
         <ScrollView>
           {products.map((item: ProductListProps) => {
             return (
-              <ListItem
-                key={item.id}
-                onPress={() => goToIdPage(item.id)} // Mover el onPress al ListItem
-              >
+              <ListItem key={item.id} onPress={() => goToIdPage(item.id)}>
                 <ListItem.Content>
                   <ListItem.Title>
                     {capitalizeFirstLetter(item.title)}
@@ -216,13 +215,9 @@ const Index: React.FC = () => {
       />
       <View style={styles.header}>
         <ThemedText type="title">{t('featuredProducts')} </ThemedText>
-        <FilterButton
-          title="Filtros"
-          filtersApplied={filtersApplied}
-          onPress={() => setIsFilterModalVisible(true)}
-        />
       </View>
       <ProductList
+        isLoading={isLoading}
         setCursor={setCursor}
         products={products}
         refetch={refetch}

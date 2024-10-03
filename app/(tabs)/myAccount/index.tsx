@@ -24,15 +24,28 @@ import BottomSuccessDrawer from '@/components/BottomSuccessDrawer/BottomSuccessD
 import { BuyerProfile } from '@/types'
 import ExitIcon from '@/assets/icons/ExitIcon'
 import ArrowRight from '@/assets/icons/ArrowRight'
+import ConfirmationModal from '@/components/ConfirmationModal'
+import { Tooltip } from '@rneui/base'
+import Animated, { FadeIn } from 'react-native-reanimated'
 
 const MyAccount = () => {
   const { t } = useTranslation()
   const { userData, loading } = useSelector((state: RootState) => state.auth)
   const [openModal, setOpenModal] = useState(false)
   const { updateUserData, isUpdating } = useUpdateUser()
-  const { logoutUser } = useAuthService()
+  const {
+    logoutUser,
+    deleteUser,
+    getAuthProvider,
+    handleGoogleDelete,
+    handlePasswordDelete,
+  } = useAuthService()
   const [showSuccessDrawer, setShowSuccessDrawer] = useState(false)
   const [showSuccessPassDrawer, setShowSuccessPassDrawer] = useState(false)
+  const [showDeleteConfimationModal, setShowDeleteConfimationModal] =
+    useState(false)
+
+  const provider = getAuthProvider()
 
   const { control, handleSubmit } = useForm<BuyerProfile>({
     defaultValues: {
@@ -68,12 +81,16 @@ const MyAccount = () => {
     setShowSuccessPassDrawer(false)
   }
 
+  const onConfirmDeletion = () => {
+    deleteUser()
+  }
+
   return (
-    <>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <Animated.View entering={FadeIn.duration(1000)}>
         <BottomSuccessDrawer
           isVisible={showSuccessDrawer}
           handleCloseDrawer={handleCloseDrawer}
@@ -89,6 +106,15 @@ const MyAccount = () => {
           setOpenModal={setOpenModal}
           t={t}
           setShowSuccessPassDrawer={setShowSuccessPassDrawer}
+        />
+        <ConfirmationModal
+          visible={showDeleteConfimationModal}
+          onClose={() => setShowDeleteConfimationModal(false)}
+          title={t('deleteAccountConfirmation')}
+          onConfirm={onConfirmDeletion}
+          provider={provider}
+          onConfirmGoogle={handleGoogleDelete}
+          onConfirmPassword={handlePasswordDelete}
         />
         <TouchableOpacity
           style={styles.bannerContainer}
@@ -190,9 +216,14 @@ const MyAccount = () => {
             title={t('save')}
             onPress={handleSubmit(onHandleSaveAccount)}
           />
+          <SecondaryButton
+            title={t('deleteMyAccount')}
+            onPress={() => setShowDeleteConfimationModal(true)}
+            underline
+          />
         </View>
-      </ScrollView>
-    </>
+      </Animated.View>
+    </ScrollView>
   )
 }
 

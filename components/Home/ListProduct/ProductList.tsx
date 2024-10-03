@@ -1,23 +1,30 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Text, FlatList, StyleSheet, View, RefreshControl } from 'react-native'
+import React, { useCallback } from 'react'
+import { FlatList, StyleSheet, View, RefreshControl } from 'react-native'
 import ProductCard from '../../ProductCard/ProductCard'
 import { Product } from '@/types'
 
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
 import EmptyList from '@/components/emptyList/EmptyList'
+import Loader from '@/components/Loader'
 
 interface ListProductProps {
   products: Product[]
   refetch: any
   setCursor: any
+  isLoading: boolean
 }
 
-const ProductList = ({ products, refetch, setCursor }: ListProductProps) => {
+const ProductList = ({
+  products,
+  refetch,
+  setCursor,
+  isLoading,
+}: ListProductProps) => {
   const { t } = useTranslation()
   const [refreshing, setRefreshing] = React.useState(false)
 
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true)
     try {
       await refetch() // Esta es la función que recargará tus productos
@@ -26,7 +33,9 @@ const ProductList = ({ products, refetch, setCursor }: ListProductProps) => {
     } finally {
       setRefreshing(false)
     }
-  }, [refetch])
+  }
+
+  if (isLoading) return <Loader />
 
   if (products?.length === 0) {
     return (

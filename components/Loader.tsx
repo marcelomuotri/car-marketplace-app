@@ -21,13 +21,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Oscurece el fondo
     justifyContent: 'center',
     alignItems: 'center',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+
+    padding: 0,
   },
   loaderContainer: {
     backgroundColor: 'transparent',
-    padding: 20,
-    borderRadius: 10,
+    padding: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },

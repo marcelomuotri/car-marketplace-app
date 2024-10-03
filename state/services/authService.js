@@ -1,9 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { Alert } from 'react-native'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  deleteUser as firebaseDeleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  GoogleAuthProvider,
 } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import {
@@ -12,6 +17,8 @@ import {
   logoutSuccess,
   loginLoading,
   loginStopLoading,
+  startReauthenticating,
+  stopReauthenticating,
 } from '../slices/authSlice'
 import { auth, db } from '../../firebaseConfig'
 import { createUserPayload } from '@/models/authModel'
@@ -42,6 +49,7 @@ export const useAuthService = () => {
           userData: convertTimestampToIsoString(payload.userData),
           user: firebaseUser.email,
         }
+
         dispatch(loginSuccess(parsePayloadData))
       } else {
         dispatch(loginFailure())
@@ -114,19 +122,6 @@ export const useAuthService = () => {
       saveUserToFirestore(userPayloadForFirebase, result.user.uid)
       //aca si tengo problemas puedo volver a ponerle el uid al userData para ver si se arregla
     }
-    // try {
-    //   const uid = result.user.uid
-    //   const userDocRef = doc(db, 'users', uid)
-    //   const userDoc = await getDoc(userDocRef)
-
-    //   if (!userDoc.exists()) {
-    //     const userPayload = createUserPayload(result.user)
-    //     const userPayloadForFirebase = convertIsoStringToTimestamp(userPayload)
-    //     await saveUserToFirestore(userPayloadForFirebase, uid)
-    //   }
-    // } catch (error) {
-    //   console.error('Error creating user from Google:', error)
-    // }
   }
 
   const saveUserToFirestore = async (userPayload, uid) => {
@@ -174,11 +169,121 @@ export const useAuthService = () => {
     }
   }
 
+  const getAuthProvider = () => {
+    const user = auth.currentUser
+    if (user) {
+      const providerId = user.providerData[0]?.providerId
+      if (providerId === 'password') {
+        return 'password'
+      } else if (providerId === 'google.com') {
+        return 'google'
+      }
+    }
+    return null
+  }
+
+  const handleGoogleDelete = async () => {
+    dispatch(loginLoading())
+    let user = auth.currentUser
+
+    if (!user) {
+      console.error('No user is currently signed in.')
+      return
+    }
+
+    try {
+      // Intentar eliminar la cuenta
+      await firebaseDeleteUser(user)
+      console.log('User deleted successfully.')
+    } catch (error) {
+      // Si el token es inválido o expira, se lanzará un error de reautenticación
+      if (error.code === 'auth/requires-recent-login') {
+        console.log('Token inválido o expirado, pidiendo reautenticación...')
+
+        // Mostrar alerta explicando la situación
+        Alert.alert(
+          'Reautenticación necesaria',
+          'Para eliminar tu cuenta, es necesario que vuelvas a iniciar sesión. Serás deslogueado y tendrás que volver a autenticarse.',
+          [
+            {
+              text: 'OK',
+              onPress: async () => {
+                // Cerrar la sesión del usuario
+                await signOut(auth)
+
+                console.log('User signed out for reauthentication.')
+
+                // Aquí puedes redirigir al usuario a la pantalla de inicio de sesión si es necesario
+                // Ejemplo: navigation.navigate('Login');
+              },
+            },
+          ],
+        )
+      } else {
+        console.error('Error al eliminar el usuario:', error)
+      }
+    }
+  }
+
+  const handlePasswordDelete = async (data) => {
+    dispatch(loginLoading())
+    dispatch(startReauthenticating())
+
+    const { password } = data
+
+    try {
+      const user = auth.currentUser
+      const email = user.email
+
+      const credential = EmailAuthProvider.credential(email, password)
+
+      // Re-autenticar al usuario
+      await reauthenticateWithCredential(user, credential)
+
+      await firebaseDeleteUser(user)
+      dispatch(logoutSuccess())
+      WebBrowser.dismissBrowser()
+    } catch (error) {
+      dispatch(loginFailure('passwordNotCorrect'))
+    } finally {
+      dispatch(stopReauthenticating()) // Detener reautenticación, sea éxito o fallo
+    }
+  }
+  const deleteUser = async (password) => {
+    try {
+      const user = auth.currentUser
+      if (user) {
+        // Obtener el correo del usuario
+        const email = user.email
+
+        // Crear las credenciales nuevamente
+        const credential = EmailAuthProvider.credential(email, password)
+
+        // Re-autenticar al usuario
+        await reauthenticateWithCredential(user, credential)
+
+        // Eliminar la cuenta después de la re-autenticación
+        await firebaseDeleteUser(user)
+        dispatch(logoutSuccess())
+        WebBrowser.dismissBrowser()
+        console.log('User deleted successfully.')
+      } else {
+        console.error('No user is signed in.')
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error)
+    }
+  }
+
   return {
     loginUser,
     logoutUser,
     createUser,
     changePassword,
     createUserFromGoogle,
+    deleteUser,
+    getAuthProvider,
+    handleGoogleDelete,
+    handlePasswordDelete,
   }
 }

@@ -7,9 +7,15 @@ interface ThemedButtonProps {
   title: string
   onPress: () => void
   style?: any
+  textStyle?: any
 }
 
-const ThemedButton = ({ title, onPress, style }: ThemedButtonProps) => {
+const ThemedButton = ({
+  title,
+  onPress,
+  style,
+  textStyle,
+}: ThemedButtonProps) => {
   const tint = useThemeColor({}, 'tint')
   const buttonTextColor = useThemeColor({}, 'buttontextColor')
 
@@ -20,7 +26,7 @@ const ThemedButton = ({ title, onPress, style }: ThemedButtonProps) => {
 
   return (
     <Pressable style={[styles.button, style]} onPress={onPress}>
-      <ThemedText style={[styles.text]}>{title}</ThemedText>
+      <ThemedText style={[styles.text, textStyle]}>{title}</ThemedText>
     </Pressable>
   )
 }

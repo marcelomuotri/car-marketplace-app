@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, TouchableOpacity, View, StyleSheet } from 'react-native'
+import {
+  Modal,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Platform,
+} from 'react-native'
 import { ThemedText } from '../ThemedText'
 import ThemedInput from '../ThemedInput'
 import ThemedButton from '../ThemedButton'
 import CloseIcon from '@/assets/icons/CloseIcon'
-import {
-  getBrandOptions,
-  getOptions,
-  getSubCategoryOptions,
-} from './utils/fieldUtils'
+
 import { variants } from '../../constants/variants'
 import { useForm } from 'react-hook-form'
 import { TFunction } from 'i18next'
+import VariantFields from './VariantFields' // Importa el nuevo componente
+import { reorderOptions } from './utils/fieldUtils'
+import SecondaryButton from './SecondaryButton'
 
 interface FiltersModalProps {
   isVisible: boolean
@@ -37,80 +42,54 @@ const FiltersModal = ({
   applyFilters,
   t,
 }: FiltersModalProps) => {
-  const { control, handleSubmit, setValue, reset } = useForm<any>({
+  const { control, handleSubmit, setValue, reset, watch } = useForm<any>({
     defaultValues: {
       category: filters?.category,
+      subCategory: filters?.subCategory,
+      modelName: filters?.modelName,
+      brandName: filters?.brandName,
     },
   })
+  const [activeVariant, setActiveVariant] = useState(0)
+  const categoryField = watch('category')
 
   useEffect(() => {
-    console.log(filters)
     setValue('category', filters.category)
+    setValue('subCategory', filters.subCategory)
+    setValue('modelName', filters.modelName)
+    setValue('brandName', filters.brandName)
   }, [filters, setValue, isVisible])
 
-  const subCategoriesToShow = categories?.find(
-    (category: any) => category.name === filters?.category,
-  )?.subCategories
-  // getOptions(
-  //   selectedCategoryValue,
-  //   categories,
-  //   'subCategories',
-  // )
-  console.log(subCategoriesToShow)
-  //console.log(categories.find((category) => category.name === 'accesorios'))
-  //hacer un object.keys como en la web me parece
+  useEffect(() => {
+    //limpiar cuando cambia categoria
+    setValue('subCategory', null)
+    setValue('brandName', null)
+    setValue('modelName', null)
+    setValue('condition', null)
+    setValue('currency', null)
+    setValue('size', null)
+    setValue('homologation', null)
+    setValue('province', null)
 
-  // const selectedSubCategoryValue = getValue(
-  //   localFilters.subCategory,
-  //   subCategoriesToShow,
-  // )
+    const v = variants.find((variant) =>
+      variant.category.includes(categoryField),
+    )
+    setActiveVariant(v?.id || 0)
+  }, [categoryField, setValue])
 
-  // const brandsToShow = getBrandOptions(selectedCategoryValue, categories)
-
-  // const selectedVariant = variants.find((variant) =>
-  //   variant.category.includes(selectedCategoryValue?.label.toLowerCase()),
-  // )
-
-  // const handleFilterChange = (key: string, value: string) => {
-  //   setFilters((prevFilters) => ({
-  //     ...prevFilters,
-  //     [key]: value,
-  //   }))
-  // }
-
-  // const onHandleApplyFilters = () => {
-  //   const filtersToApply = { ...localFilters }
-  //   if (filtersToApply.subCategory) {
-  //     filtersToApply.subCategory = selectedSubCategoryValue.value
-  //   }
-
-  //   applyFilters(filtersToApply)
-  //   toggleModal()
-  // }
-
-  // const renderFieldVariant = () => {
-  //   if (selectedVariant?.id === 1) {
-  //     return (
-  //       <ThemedInput
-  //         control={control}
-  //         type="select"
-  //         title="Marca"
-  //         placeholder="Seleccionar"
-  //         value={localFilters.brand}
-  //         onChange={(value) => handleFilterChange('brand', value)}
-  //         options={brandsToShow.map((brand) => ({
-  //           label: brand.label,
-  //           value: brand.id,
-  //         }))}
-  //       />
-  //     )
-  //   }
-  // Añadir más casos si es necesario
-  //}
+  const subCategoriesToShow = reorderOptions(
+    categories?.find((category: any) => category.name === categoryField)
+      ?.subCategories,
+  )
 
   const onCancelAndCloseModal = () => {
     toggleModal()
+    //reset()
+  }
+
+  const onDeleteFilters = () => {
     reset()
+    setValue('category', null)
   }
 
   return (
@@ -129,6 +108,16 @@ const FiltersModal = ({
             <CloseIcon />
           </TouchableOpacity>
         </View>
+        <SecondaryButton
+          style={{
+            padding: 0,
+            paddingTop: 5,
+            alignItems: 'flex-end',
+          }}
+          title={'Borrar filtros'}
+          underline
+          onPress={onDeleteFilters}
+        />
         <View style={styles.inputContainer}>
           <ThemedInput
             name="category"
@@ -136,9 +125,9 @@ const FiltersModal = ({
             type="select"
             label={t('category')}
             placeholder="Seleccionar"
-            options={categoriesToShow.map((category) => ({
-              label: category.label,
-              value: category.label,
+            options={categoriesToShow?.map((category) => ({
+              label: category.label.toLowerCase(),
+              value: category.label.toLowerCase(),
             }))}
           />
           <ThemedInput
@@ -147,16 +136,26 @@ const FiltersModal = ({
             label="SubCategoría"
             placeholder="Seleccionar"
             name="subCategory"
-            //esto lo haria con el watch o algo asi
-            //onChange={(value) => handleFilterChange('subCategory', value)}
             options={subCategoriesToShow?.map((subCategory) => ({
               label: subCategory,
               value: subCategory,
             }))}
           />
-          {/* {renderFieldVariant()} */}
+          {/* Usar el nuevo componente VariantFields aquí */}
+          <VariantFields
+            activeVariant={activeVariant}
+            control={control}
+            t={t}
+            categoryField={categoryField}
+            categoriesToShow={categoriesToShow}
+            categories={categories}
+            watch={watch}
+          />
         </View>
-        {/* <ThemedButton title="Aplicar filtros" onPress={onHandleApplyFilters} /> */}
+        <ThemedButton
+          title="Aplicar filtros"
+          onPress={handleSubmit(applyFilters)}
+        />
       </View>
     </Modal>
   )
@@ -164,6 +163,9 @@ const FiltersModal = ({
 
 const styles = StyleSheet.create({
   modalContainer: {
+    paddingTop: Platform.select({
+      ios: 50,
+    }),
     padding: 20,
   },
   header: {
@@ -176,6 +178,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     gap: 12,
+    paddingBottom: 24,
   },
 })
 

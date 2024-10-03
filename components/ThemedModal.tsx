@@ -1,5 +1,11 @@
 import React from 'react'
-import { View, Modal, StyleSheet, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native'
 import { Icon } from '@rneui/themed'
 
 interface ThemedModalProps {
@@ -21,14 +27,13 @@ const ThemedModal: React.FC<ThemedModalProps> = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Icon name="close" size={24} color="#333" />
-          </TouchableOpacity>
-          <View>{children}</View>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View>{children}</View>
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   )
 }

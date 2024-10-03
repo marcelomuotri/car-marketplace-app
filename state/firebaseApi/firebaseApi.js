@@ -15,6 +15,9 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 
+// Función para manejar consultas con filtros
+import { orderBy } from 'firebase/firestore'
+
 // Función para obtener un documento específico
 
 export const convertIsoStringToTimestamp = (data) => {
@@ -94,17 +97,21 @@ const getFilteredDocuments = async (
   populate,
   limitCount,
   cursor,
+  orderByField = null, // Campo por el cual ordenar
+  orderDirection = 'asc', // Dirección de orden (asc o desc)
 ) => {
   let q = collectionRef
 
   if (filters && Object.keys(filters).length > 0) {
     Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && key === 'size') {
+        q = query(q, where(key, 'in', value))
+      } else if (Array.isArray(value)) {
         q = query(q, where(key, 'array-contains-any', value))
       } else if (key === 'title') {
         value = value.toLowerCase()
         const startValue = value
-        const endValue = value + '\uf8ff' // Rango de búsqueda
+        const endValue = value + '\uf8ff'
         q = query(
           q,
           where('title', '>=', startValue),
@@ -116,9 +123,15 @@ const getFilteredDocuments = async (
     })
   }
 
+  // Añadir el orderBy si se proporciona un campo de ordenación
+  if (orderByField) {
+    q = query(q, orderBy(orderByField, orderDirection))
+  }
+
+  // Limitar el número de resultados
   q = query(q, limit(limitCount))
 
-  // Si hay un cursor, empezar después del último documento visible
+  // Manejar la paginación con el cursor
   if (cursor) {
     const lastDocRef = await getDoc(doc(collectionRef, cursor))
     q = query(q, startAfter(lastDocRef))
@@ -148,6 +161,7 @@ const getDocumentsByIds = async (collectionRef, ids, populate) => {
 }
 
 // Crear un baseQuery personalizado para Firebase
+// Crear un baseQuery personalizado para Firebase
 export const firebaseBaseQuery = async ({
   method,
   path,
@@ -157,6 +171,8 @@ export const firebaseBaseQuery = async ({
   incrementField,
   limitCount,
   cursor,
+  orderByField = null, // Campo para el orderBy
+  orderDirection = 'asc', // Dirección de orden
 }) => {
   const collectionRef = collection(db, path)
 
@@ -164,18 +180,18 @@ export const firebaseBaseQuery = async ({
     switch (method) {
       case 'GET':
         if (filters && filters.id) {
-          // Caso de obtener documento por ID
           return {
             data: [await getDocumentById(collectionRef, filters.id, populate)],
           }
         } else {
-          // Caso de obtener documentos con filtros
           const filteredDocuments = await getFilteredDocuments(
             collectionRef,
             filters,
             populate,
             limitCount,
             cursor,
+            orderByField, // Pasar el campo de orden
+            orderDirection, // Pasar la dirección de orden
           )
           return filteredDocuments
         }

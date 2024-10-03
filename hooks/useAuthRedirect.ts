@@ -4,13 +4,16 @@ import { router } from 'expo-router'
 import { RootState } from '@/state/store'
 
 const useAuthRedirect = () => {
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, reauthenticating } = useSelector(
+    (state: RootState) => state.auth,
+  )
 
   useEffect(() => {
-    if (user) {
+    if (user && !reauthenticating) {
+      // Solo redirigir si el usuario está logueado y no está en proceso de reautenticación
       router.replace('/')
     }
-  }, [user])
+  }, [user, reauthenticating])
 }
 
 export default useAuthRedirect

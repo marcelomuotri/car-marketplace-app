@@ -9,6 +9,7 @@ const initialState: AuthState = {
   loading: true,
   error: null,
   userData: null,
+  reauthenticating: false,
 }
 
 // Slice de autenticación
@@ -42,6 +43,12 @@ const authSlice = createSlice({
       state.loading = false
       state.error = null
     },
+    startReauthenticating: (state) => {
+      state.reauthenticating = true // Iniciar reautenticación
+    },
+    stopReauthenticating: (state) => {
+      state.reauthenticating = false // Detener reautenticación
+    },
   },
   extraReducers: (builder) => {},
 })
@@ -52,6 +59,8 @@ export const {
   logoutSuccess,
   loginLoading,
   loginStopLoading,
+  startReauthenticating,
+  stopReauthenticating,
 } = authSlice.actions
 // Exporta el reducer de la slice
 export const authReducer = authSlice.reducer

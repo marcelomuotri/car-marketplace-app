@@ -10,8 +10,24 @@ import {
 import { useGetProductsQuery } from '../customApi/customApi'
 import { RootState } from '../store'
 import { ProductUpload } from '@/types'
+import { cleanFilters } from '@/components/Home/utils/fieldUtils'
 
 const base = 'products'
+
+const orderOptions = [
+  { field: 'createdAt', direction: 'desc' },
+  { field: 'createdAt', direction: 'asc' },
+  { field: 'title', direction: 'asc' },
+  { field: 'title', direction: 'desc' },
+
+  // Agregar más opciones si es necesario
+]
+
+const getRandomOrderOption = () => {
+  return orderOptions[Math.floor(Math.random() * orderOptions.length)]
+}
+
+const randomOrder = getRandomOrderOption()
 
 // Hook para obtener productos por usuario
 export const useGetAllProducts = ({
@@ -20,12 +36,15 @@ export const useGetAllProducts = ({
   limitCount,
   cursor,
 }: any) => {
+  const cleanedFilters = cleanFilters(filters)
   const { data, error, isLoading, refetch } = useGetProductsQuery({
     collectionPath: base,
     populate,
-    filters: { ...filters },
+    filters: { ...cleanedFilters },
     limitCount,
     cursor,
+    //orderByField: randomOrder.field,
+    //orderDirection: randomOrder.direction,
   })
 
   return {

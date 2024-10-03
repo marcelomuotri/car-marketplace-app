@@ -37,68 +37,92 @@ export const getFieldsToShow = (product: Product, t: Function) => {
   }
 }
 
-//funcion para armar las distintas subcategories
-export const getSubCategoryOptions = (selectedCategoryValue, categories) => {
-  const subCategoryOptions = selectedCategoryValue
-    ? categories
-        .find(
-          (category) =>
-            category.name === selectedCategoryValue?.label.toLowerCase(),
-        )
-        ?.subCategories?.map((subCategory, index) => ({
-          label:
-            subCategory.charAt(0).toUpperCase() +
-            subCategory.slice(1).toLowerCase(), // Primera letra en mayúscula, resto en minúscula
-          value: subCategory.toLowerCase(), // Todo en minúsculas
-          id: index.toString(), // Índice como string para el ID
-        }))
-    : []
-  return subCategoryOptions
+export const parseFilters = (newFilters: any) => {
+  const categoryMapping: { [key: string]: string } = {
+    autos: 'auto',
+    motos: 'moto',
+    kartings: 'karting',
+    atvs: 'atv',
+  }
+  // Extraemos la categoría original
+  const originalCategory = newFilters.category
+
+  // Buscamos si la categoría original necesita ser mapeada
+  const mappedCategory = categoryMapping[originalCategory] || originalCategory
+
+  // Retornamos un nuevo objeto con el campo 'category' modificado
+  return {
+    ...newFilters, // Copiamos todos los demás campos
+    category: mappedCategory, // Actualizamos 'category' si corresponde
+  }
 }
 
-export const getBrandOptions = (selectedCategoryValue, categories) => {
-  if (!selectedCategoryValue) return []
-
-  const subCategoryOptions = categories.find(
-    (category) => category.name === selectedCategoryValue?.label.toLowerCase(),
-  )
-
-  if (!subCategoryOptions?.brands) return []
-
-  const brandsOptions = Object.keys(subCategoryOptions.brands).map(
-    (brand, index) => ({
-      label: brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase(), // Primera letra en mayúscula, resto en minúscula
-      value: brand.toLowerCase(), // Todo en minúsculas
-      id: index.toString(), // Índice como string para el ID
-    }),
-  )
-
-  return brandsOptions
-}
-
-export const getOptions = (
-  selectedCategoryValue: any,
+// src/utils/categoryUtils.ts
+export const getModelsForBrand = (
   categories: any[],
-  field: string,
-  shouldUseKeys: boolean = false,
-) => {
-  if (!selectedCategoryValue) return []
+  categoryField: string | null,
+  selectedBrand: string | null,
+): string[] => {
+  // Si no hay categoría seleccionada o marca seleccionada, retornamos un array vacío
+  if (!categoryField || !selectedBrand) {
+    return []
+  }
 
-  const categoryOptions = categories.find(
-    (category) => category.name === selectedCategoryValue?.label.toLowerCase(),
+  // Encontrar la categoría que contiene la marca seleccionada
+  const selectedCategory = categories?.find(
+    (category) => category?.name === categoryField,
   )
 
-  if (!categoryOptions || !categoryOptions[field]) return []
+  // Si no hay categoría o no hay marcas, retornamos un array vacío
+  if (!selectedCategory || !selectedCategory.brands) {
+    return []
+  }
 
-  const items = shouldUseKeys
-    ? Object.keys(categoryOptions[field])
-    : categoryOptions[field]
+  // Retornamos los modelos de la marca seleccionada, si existe, o un array vacío
+  return selectedCategory.brands[selectedBrand] || []
+}
 
-  const options = items.map((item: string, index: number) => ({
-    label: item.charAt(0).toUpperCase() + item.slice(1).toLowerCase(),
-    value: item.toLowerCase(),
-    id: index.toString(),
-  }))
+export const reorderOptions = (
+  options: string[] = [], // Default value as empty array
+  targetValue = 'otros',
+): string[] => {
+  // Verificar si options es un array, si no lo es, retornar un array vacío
+  if (!Array.isArray(options)) {
+    return []
+  }
 
-  return options
+  // Crear una copia del array original para evitar modificarlo directamente
+  const optionsCopy = [...options]
+
+  // Ordenar alfabéticamente la copia del array de strings
+  const sortedOptions = optionsCopy.sort((a, b) =>
+    a.localeCompare(b, 'es', { sensitivity: 'base' }),
+  )
+
+  // Encontrar el índice de la opción que queremos mover al final
+  const targetIndex = sortedOptions.findIndex(
+    (option) => option.toLowerCase() === targetValue.toLowerCase(),
+  )
+
+  // Si la opción existe y no está ya al final, moverla al final
+  if (targetIndex >= 0 && targetIndex !== sortedOptions.length - 1) {
+    const [targetOption] = sortedOptions.splice(targetIndex, 1) // Eliminar la opción del array
+    sortedOptions.push(targetOption) // Añadir la opción al final del array
+  }
+
+  return sortedOptions
+}
+
+export const cleanFilters = (filters: any) => {
+  // Crear un nuevo objeto sin las propiedades que estén en null, undefined o vacío
+  const cleanedFilters: any = {}
+
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key]
+    if (value !== null && value !== undefined && value !== '') {
+      cleanedFilters[key] = value // Solo se añaden propiedades con valores válidos
+    }
+  })
+
+  return cleanedFilters
 }

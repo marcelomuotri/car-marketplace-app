@@ -19,12 +19,12 @@ const CategoriesList = ({
 }: CategoriesListProps) => {
   const { t } = useTranslation()
 
-  const onHandleSelectCategory = (id: string) => {
+  const onHandleSelectCategory = (label: string) => {
     setCursor(null)
     setFilters((prevFilters: any) => ({
-      ...prevFilters,
-      category: id,
-      subCategory: null, // Reiniciar subCategoría al cambiar de categoría
+      title: prevFilters.title ?? '',
+      competition: prevFilters.competition,
+      category: label.toLowerCase(),
     }))
   }
 
@@ -38,7 +38,7 @@ const CategoriesList = ({
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.categoryItem}
-            onPress={() => onHandleSelectCategory(item.id)}
+            onPress={() => onHandleSelectCategory(item.label)}
           >
             <View style={styles.iconContainer}>{item.Icon}</View>
             <ThemedText type="categoryIcon">{item.label}</ThemedText>
