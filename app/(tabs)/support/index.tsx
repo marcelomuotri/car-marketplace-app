@@ -1,14 +1,20 @@
-import ThemedInput from '@/components/ThemedInput'
-import { ThemedText } from '@/components/ThemedText'
 import React, { useState } from 'react'
-import { View, StyleSheet } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
+import ThemedInput from '@/components/ThemedInput'
 import ThemedButton from '@/components/ThemedButton'
-import { useAddSupport } from '@/state/api/supportApi'
-import Loader from '@/components/Loader'
-import { SupportQueryUpload } from '@/types'
 import BottomSuccessDrawer from '@/components/BottomSuccessDrawer/BottomSuccessDrawer'
+import Loader from '@/components/Loader'
+import { useAddSupport } from '@/state/api/supportApi'
+import { SupportQueryUpload } from '@/types'
+import { ThemedText } from '@/components/ThemedText'
 
 const Support = () => {
   const { t } = useTranslation()
@@ -47,15 +53,23 @@ const Support = () => {
   }
 
   if (isLoading) return <Loader />
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
+    >
       <BottomSuccessDrawer
         handleCloseDrawer={onCloseSuccessDrawer}
         isVisible={showSuccessDrawer}
         {...BottomSucessDrawerProps}
       />
       <View style={styles.supportContainer}>
-        <View style={styles.formContainer}>
+        <ScrollView
+          contentContainerStyle={styles.formContainer}
+          keyboardShouldPersistTaps="handled"
+        >
           <View>
             <ThemedText type="title">Consultas</ThemedText>
             <ThemedText style={{ color: '#757575' }}>
@@ -70,7 +84,7 @@ const Support = () => {
             type="select"
             options={supportOptions}
             placeholder="Seleccionar"
-          ></ThemedInput>
+          />
           <ThemedInput
             name="description"
             type="text"
@@ -78,7 +92,7 @@ const Support = () => {
             label="Descripción"
             control={control}
           />
-        </View>
+        </ScrollView>
         <View style={styles.buttonContainer}>
           <ThemedButton
             title="Enviar consulta"
@@ -86,7 +100,7 @@ const Support = () => {
           />
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -96,17 +110,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   supportContainer: {
-    paddingHorizontal: 25,
-    paddingVertical: 15,
-    flexDirection: 'column',
     flex: 1,
     justifyContent: 'space-between',
+    paddingHorizontal: 25,
+    paddingVertical: 15,
   },
   formContainer: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
     gap: 24,
   },
   buttonContainer: {
-    justifyContent: 'flex-end',
+    marginTop: 20,
   },
 })
 

@@ -116,7 +116,7 @@ const MyAccount = () => {
           onConfirmGoogle={handleGoogleDelete}
           onConfirmPassword={handlePasswordDelete}
         />
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.bannerContainer}
           onPress={() => Linking.openURL('https://app.2y4race.com')}
         >
@@ -124,7 +124,7 @@ const MyAccount = () => {
             Publicá gratis tus productos
           </ThemedText>
           <ArrowRight />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <ThemedText type="title" style={{ marginBottom: 20 }}>
           {t('personalData').toLocaleUpperCase()}

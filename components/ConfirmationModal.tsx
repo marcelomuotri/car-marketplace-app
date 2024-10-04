@@ -38,6 +38,8 @@ const ConfirmationModal = ({
       onConfirmGoogle()
     } else if (provider === 'password') {
       handleSubmit(onConfirmPassword)()
+    } else {
+      onConfirmGoogle()
     }
   }
   return (

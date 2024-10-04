@@ -6,6 +6,8 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Platform,
+  Alert,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useAuthService } from '@/state/services/authService'
@@ -22,13 +24,16 @@ import Back from '@/components/Back'
 import { router } from 'expo-router'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
-import { auth } from '@/firebaseConfig'
+import { auth, db } from '@/firebaseConfig'
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
 import {
   loginFailure,
   loginLoading,
   logoutSuccess,
 } from '@/state/slices/authSlice'
+import * as AppleAuthentication from 'expo-apple-authentication'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { createUserPayload } from '@/models/authModel'
 
 interface SignUpFieldsForm {
   email: string
@@ -121,6 +126,70 @@ export default function SignUpForm() {
 
   const signInWithGoogle = () => {
     promptAsync()
+  }
+
+  const loginWithApple = async () => {
+    try {
+      // Iniciar el flujo de autenticación con Apple
+      const appleCredential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      })
+
+      // Guardar las credenciales de Apple en el estado
+      //setAppleCredentialData(appleCredential)
+
+      // Destructurar el token que vamos a pasar a Firebase
+      const { identityToken } = appleCredential
+
+      if (identityToken) {
+        // Crear el proveedor de autenticación con Apple
+        const provider = new OAuthProvider('apple.com')
+        provider.addScope('email')
+        provider.addScope('name')
+        const credential = provider.credential({
+          idToken: identityToken,
+        })
+
+        // Autenticar al usuario con Firebase usando el token de Apple
+        const userCredential = await signInWithCredential(auth, credential)
+        const user = userCredential.user
+        // Guardar las credenciales de Firebase en el estado
+
+        if (user) {
+          const userUID = user.uid
+
+          // Obtén una referencia al documento del usuario en Firestore
+          const userDocRef = doc(db, 'users', userUID)
+
+          // Verifica si el documento existe
+          const userDoc = await getDoc(userDocRef)
+
+          if (!userDoc.exists()) {
+            // Si el documento no existe, es un usuario nuevo
+            const userPayload = createUserPayload(user) // Ajusta esta función según tus necesidades
+
+            // Crea un nuevo documento para el usuario en Firestore
+            await setDoc(userDocRef, userPayload)
+            console.log('Nuevo usuario creado en Firestore')
+          } else {
+            // Si el documento existe, el usuario ya está registrado
+            console.log('Usuario existente, no se requiere acción adicional')
+          }
+        }
+      }
+    } catch (error) {
+      if (error.code === 'ERR_CANCELED') {
+        Alert.alert('Autenticación cancelada')
+      } else {
+        Alert.alert(
+          'Error',
+          'Ocurrió un error durante la autenticación con Apple.',
+        )
+      }
+    }
   }
 
   const handleBackHome = () => {
@@ -262,6 +331,18 @@ export default function SignUpForm() {
                   title={t('registerWithGoogle')}
                   onPress={signInWithGoogle}
                 />
+                {Platform.OS === 'ios' && (
+                  <AppleAuthentication.AppleAuthenticationButton
+                    buttonType={
+                      AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+                    }
+                    buttonStyle={
+                      AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                    }
+                    style={{ width: '100%', height: 44, marginTop: 20 }}
+                    onPress={loginWithApple}
+                  />
+                )}
               </KeyboardAwareScrollView>
             </>
           )}

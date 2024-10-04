@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { UserData } from '../types'
 
 export const createUserPayload: (user: any) => UserData = (user) => ({
-  userEmail: user.email,
+  userEmail: user.email ?? '',
   uid: user.uid,
   name: null,
   surname: null,

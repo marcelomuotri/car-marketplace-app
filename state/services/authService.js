@@ -195,6 +195,7 @@ export const useAuthService = () => {
       // Intentar eliminar la cuenta
       await firebaseDeleteUser(user)
       console.log('User deleted successfully.')
+      dispatch(logoutSuccess())
     } catch (error) {
       // Si el token es inválido o expira, se lanzará un error de reautenticación
       if (error.code === 'auth/requires-recent-login') {
@@ -285,5 +286,6 @@ export const useAuthService = () => {
     getAuthProvider,
     handleGoogleDelete,
     handlePasswordDelete,
+    saveUserToFirestore,
   }
 }
