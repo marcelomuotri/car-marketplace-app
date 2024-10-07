@@ -2,7 +2,7 @@
   "expo": {
     "name": "2y4 Race",
     "slug": "car-marketplace-app",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon1.png",
     "scheme": "car-marketplace-app",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.muotrimarcelo.carmarketplaceapp",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "associatedDomains": ["applinks:app.2y4race.com"],
       "usesAppleSignIn": true
     },

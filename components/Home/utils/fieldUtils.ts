@@ -2,11 +2,20 @@ import { Product } from '@/types'
 
 // utils/fieldUtils.ts
 export const getFieldsToShow = (product: Product, t: Function) => {
+  console.log(product)
   const fields = [
     { id: 0, label: t('description'), value: product?.description },
     { id: 1, label: t('subCategory'), value: product?.subCategory },
-    { id: 2, label: t('brand'), value: product?.brand?.label },
-    { id: 3, label: t('model'), value: product?.model?.label },
+    {
+      id: 2,
+      label: t('brand'),
+      value: product?.brand?.label || product?.brand,
+    },
+    {
+      id: 3,
+      label: t('model'),
+      value: product?.model?.label || product?.model,
+    },
     { id: 4, label: t('condition'), value: product?.condition },
     { id: 5, label: t('year'), value: product?.year },
     {

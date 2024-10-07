@@ -163,6 +163,7 @@ const Index: React.FC = () => {
         setCursor={setCursor}
         uid={userData?.uid}
         t={t}
+        setSearch={setSearch}
       />
 
       <Input

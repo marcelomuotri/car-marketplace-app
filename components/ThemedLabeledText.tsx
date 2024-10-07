@@ -1,11 +1,7 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import { ThemedText } from './ThemedText'
-
-// Función para capitalizar la primera letra
-const capitalizeFirstLetter = (string: string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1)
-}
+import { capitalizeFirstLetter } from './utils/formatter'
 
 interface ThemedLabeledTextProps {
   label: string

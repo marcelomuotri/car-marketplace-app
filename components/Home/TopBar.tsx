@@ -16,6 +16,7 @@ interface TopBarProps {
   setCursor: any
   uid: string
   t: TFunction
+  setSearch: any
 }
 
 const TopBar = ({
@@ -24,6 +25,7 @@ const TopBar = ({
   setCursor,
   uid,
   t,
+  setSearch,
 }: TopBarProps) => {
   const { updateUserData, isUpdating } = useUpdateUser()
   const [isVisible, setIsVisible] = useState(false)
@@ -46,6 +48,7 @@ const TopBar = ({
       favoriteCompetition: optionValue,
     })
     setSelectedCompetition(optionValue)
+    setSearch('')
     setTimeout(() => {
       handleClose()
     }, 300)
