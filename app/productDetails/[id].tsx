@@ -109,7 +109,6 @@ const Index = () => {
   }
 
   const fieldsToShow = getFieldsToShow(product, t)
-  console.log(fieldsToShow)
 
   return (
     <View style={styles.container}>

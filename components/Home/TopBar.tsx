@@ -13,10 +13,10 @@ import { TFunction } from 'i18next'
 interface TopBarProps {
   selectedCompetition: string
   setSelectedCompetition: (option: string) => void
-  setCursor: any
+  setCursor: (cursor: string | null) => void
   uid: string
   t: TFunction
-  setSearch: any
+  setSearch: (search: string) => void
 }
 
 const TopBar = ({
@@ -27,7 +27,7 @@ const TopBar = ({
   t,
   setSearch,
 }: TopBarProps) => {
-  const { updateUserData, isUpdating } = useUpdateUser()
+  const { updateUserData } = useUpdateUser()
   const [isVisible, setIsVisible] = useState(false)
   const tint = useThemeColor({}, 'tint')
 

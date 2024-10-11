@@ -7,7 +7,7 @@ interface CategoriesListProps {
   filters: any
   setFilters: (filters: any) => void
   categoriesToShow: any
-  setCursor: any
+  setCursor: (cursor: string | null) => void
   setFiltersApplied: (number: number) => void
 }
 
@@ -15,7 +15,6 @@ const CategoriesList = ({
   setFilters,
   categoriesToShow,
   setCursor,
-  setFiltersApplied,
 }: CategoriesListProps) => {
   const { t } = useTranslation()
 

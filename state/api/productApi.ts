@@ -50,7 +50,6 @@ export const useGetAllProducts = ({
 
   // Añadir el campo de ordenamiento si se proporciona
   if (sortBy) {
-    console.log(sortBy, 'orderBy')
     queryOptions.orderByField = 'price' // El campo por el cual se ordena
     queryOptions.orderDirection = sortBy
   }

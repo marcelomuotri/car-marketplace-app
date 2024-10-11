@@ -80,5 +80,6 @@
   "price": "Precio",
   "deleteMyAccount": "Borrar mi cuenta",
   "deleteAccountConfirmation": "¿Estás seguro que querés borrar tu cuenta?",
-  "date": "Fecha"
+  "date": "Fecha",
+  "search": "Buscar"
 }

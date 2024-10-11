@@ -7,14 +7,12 @@ import BasicLayout from '@/components/BasicLayout'
 import CategoriesList from '@/components/Home/CategoriesList'
 import TopBar from '@/components/Home/TopBar'
 import FiltersModal from '@/components/Home/FiltersModal'
-import { View, StyleSheet, ScrollView, StatusBar } from 'react-native'
+import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native'
 import { ThemedText } from '@/components/ThemedText'
 import { useTranslation } from 'react-i18next'
 import { competitionCategories, staticCategories } from '@/constants/Categories'
-import BottomSheetDrawer from '@/components/BottomSheetDrawer'
 import { Input, ListItem } from '@rneui/base'
 import SearchIcon from '@/assets/icons/SearchIcon'
-import { capitalizeFirstLetter } from '@/components/utils/formatter'
 import { Product } from '@/types'
 import { router } from 'expo-router'
 import { useSelector } from 'react-redux'
@@ -22,6 +20,9 @@ import { RootState } from '@/state/store'
 import FilterButton from '@/components/FilterButton'
 import { countAppliedFilters, cleanFilters } from '@/components/utils/functions'
 import SorterModal from '@/components/Home/SorterModal'
+import SearchDrawer from '@/components/Home/SearchDrawer'
+import CloseIcon from '@/assets/icons/CloseIcon'
+import {} from 'react-native-gesture-handler'
 
 export type ProductListProps = Pick<
   Product,
@@ -50,7 +51,7 @@ const Index: React.FC = () => {
   const [sorterApplied, setSorterApplied] = useState(0)
 
   // Estado para manejar productos cargados y el cursor para la paginación
-  const [cursor, setCursor] = useState(null)
+  const [cursor, setCursor] = useState<string | null>(null)
 
   // Configuración de categorías a mostrar
   const competitionCategoryToShow = competitionCategories.filter(
@@ -81,6 +82,10 @@ const Index: React.FC = () => {
       return updatedFilters
     })
   }, [search, selectedCategoryLabel, filters.subCategory])
+
+  useEffect(() => {
+    console.log(filters)
+  }, [filters])
 
   const { products, isLoading, error, refetch } = useGetAllProducts({
     populate: ['title', 'price', 'photo1Url', 'currency'],
@@ -144,6 +149,10 @@ const Index: React.FC = () => {
     router.push({ pathname: 'productDetails/[id]', params: { id: id } })
   }
 
+  const onCleanSearch = () => {
+    setSearch('')
+  }
+
   if (isLoadingCategories || !products || !categories) {
     return <Loader />
   }
@@ -169,43 +178,26 @@ const Index: React.FC = () => {
           inputContainerStyle={styles.inputContainerStyle}
           containerStyle={styles.containerStyle}
           inputStyle={[styles.inputStyle]}
-          placeholder="Buscar"
+          placeholder={t('search')}
           leftIcon={<SearchIcon />}
+          rightIcon={
+            <TouchableOpacity onPress={onCleanSearch}>
+              <CloseIcon color="#939393" />
+            </TouchableOpacity>
+          }
           leftIconContainerStyle={{ marginRight: 6 }}
+          rightIconContainerStyle={{ marginRight: -6 }}
           onPress={onOpenSearchDrawer}
           value={search}
         />
-        <BottomSheetDrawer
-          isVisible={isSearchDrawerOpen}
-          handleClose={() => setIsSearchDrawerOpen(false)}
-          height={0.94}
-        >
-          <Input
-            inputContainerStyle={styles.inputContainerStyle}
-            containerStyle={styles.containerStyle}
-            inputStyle={[styles.inputStyle]}
-            placeholder="Buscar"
-            leftIcon={<SearchIcon />}
-            leftIconContainerStyle={{ marginRight: 15 }}
-            onPress={() => setIsSearchDrawerOpen(true)}
-            onChangeText={(text) => setSearch(text)}
-            value={search}
-            onSubmitEditing={() => setIsSearchDrawerOpen(false)}
-          />
-          <ScrollView>
-            {products.map((item: ProductListProps) => {
-              return (
-                <ListItem key={item.id} onPress={() => goToIdPage(item.id)}>
-                  <ListItem.Content>
-                    <ListItem.Title>
-                      {capitalizeFirstLetter(item.title)}
-                    </ListItem.Title>
-                  </ListItem.Content>
-                </ListItem>
-              )
-            })}
-          </ScrollView>
-        </BottomSheetDrawer>
+        <SearchDrawer
+          isSearchDrawerOpen={isSearchDrawerOpen}
+          setIsSearchDrawerOpen={setIsSearchDrawerOpen}
+          setSearch={setSearch}
+          search={search}
+          products={products}
+          goToIdPage={goToIdPage}
+        />
         <CategoriesList
           filters={filters}
           setFilters={setFilters}
@@ -217,7 +209,7 @@ const Index: React.FC = () => {
           <ThemedText type="title">{t('featuredProducts')} </ThemedText>
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <FilterButton
-              title="Ordenar"
+              title={t('sort')}
               filtersApplied={sorterApplied}
               onPress={() => {
                 setCursor(null)
@@ -225,7 +217,7 @@ const Index: React.FC = () => {
               }}
             />
             <FilterButton
-              title="Filtros"
+              title={t('filter')}
               filtersApplied={filtersApplied}
               onPress={() => {
                 setCursor(null)
