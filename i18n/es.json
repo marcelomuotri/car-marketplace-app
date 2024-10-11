@@ -79,5 +79,6 @@
   "competition": "Competición",
   "price": "Precio",
   "deleteMyAccount": "Borrar mi cuenta",
-  "deleteAccountConfirmation": "¿Estás seguro que querés borrar tu cuenta?"
+  "deleteAccountConfirmation": "¿Estás seguro que querés borrar tu cuenta?",
+  "date": "Fecha"
 }

@@ -63,22 +63,19 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="productDetails"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="login-form" options={{ headerShown: false }} />
-          <Stack.Screen name="sign-up-form" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="recover-password"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="oauthredirect" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
+      {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="productDetails" options={{ headerShown: false }} />
+        <Stack.Screen name="login-form" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-up-form" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="recover-password"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="oauthredirect" options={{ headerShown: false }} />
+      </Stack>
+      {/* </ThemeProvider> */}
     </Provider>
   )
 }

@@ -1,18 +1,24 @@
-import React, { useCallback } from 'react'
-import { FlatList, StyleSheet, View, RefreshControl } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  RefreshControl,
+  Platform,
+  SafeAreaView,
+} from 'react-native'
 import ProductCard from '../../ProductCard/ProductCard'
 import { Product } from '@/types'
-
 import { useTranslation } from 'react-i18next'
-import { Platform } from 'react-native'
 import EmptyList from '@/components/emptyList/EmptyList'
 import Loader from '@/components/Loader'
 
 interface ListProductProps {
   products: Product[]
-  refetch: any
-  setCursor: any
+  refetch: () => Promise<void>
+  setCursor: (cursor: string | null) => void
   isLoading: boolean
+  error?: any
 }
 
 const ProductList = ({
@@ -20,14 +26,15 @@ const ProductList = ({
   refetch,
   setCursor,
   isLoading,
+  error,
 }: ListProductProps) => {
   const { t } = useTranslation()
-  const [refreshing, setRefreshing] = React.useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const onRefresh = async () => {
     setRefreshing(true)
     try {
-      await refetch() // Esta es la función que recargará tus productos
+      await refetch()
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
@@ -35,72 +42,54 @@ const ProductList = ({
     }
   }
 
-  if (isLoading) return <Loader />
-
-  if (products?.length === 0) {
-    return (
-      <View>
-        <EmptyList
-          title={t('emptyProductsTitle')}
-          subTitle={t('emptyProductsSubtitle')}
-        />
-      </View>
-    )
-  }
-
   const onLoadMoreData = () => {
-    setCursor(products[products.length - 1].id)
+    if (products.length > 0) {
+      const lastProduct = products[products.length - 1]
+      setCursor(lastProduct.id)
+    }
   }
+
+  const renderItem = useCallback(
+    ({ item }) => <ProductCard product={item} />,
+    [],
+  )
+
+  if (isLoading && !refreshing) return <Loader />
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
         numColumns={2}
-        renderItem={({ item }) => <ProductCard product={item} />}
+        renderItem={renderItem}
         columnWrapperStyle={styles.row}
-        ListFooterComponent={Platform.select({
-          ios: <View style={styles.iosFooter} />,
-          android: <View style={styles.androidFooter} />,
-        })}
+        // Elimina contentContainerStyle o asegúrate de que no tiene flexGrow
+        // contentContainerStyle={styles.contentContainer}
+        ListEmptyComponent={
+          <EmptyList
+            title={t('emptyProductsTitle')}
+            subTitle={t('emptyProductsSubtitle')}
+          />
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         onEndReachedThreshold={0.5}
         onEndReached={onLoadMoreData}
       />
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default ProductList
+export default React.memo(ProductList)
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 12,
+  safeArea: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  headerButton: {
-    borderWidth: 1,
-    borderRadius: 5,
   },
   row: {
     justifyContent: 'space-between',
     marginBottom: 10,
-  },
-  iosFooter: {
-    height: 20,
-  },
-  androidFooter: {
-    height: 55,
   },
 })

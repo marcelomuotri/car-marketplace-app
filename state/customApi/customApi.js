@@ -26,9 +26,10 @@ export const productsApi = createApi({
         orderDirection,
       }),
       serializeQueryArgs: ({ endpointName, queryArgs }) => {
-        const { collectionPath, filters } = queryArgs
+        const { collectionPath, filters, orderByField, orderDirection } =
+          queryArgs
 
-        // Serializa todo el objeto de filters de manera ordenada para evitar problemas de clave duplicada
+        // Serialize filters
         const sortedFilters = Object.keys(filters)
           .sort()
           .reduce((acc, key) => {
@@ -36,7 +37,8 @@ export const productsApi = createApi({
             return acc
           }, {})
 
-        return `${endpointName}-${collectionPath}-${JSON.stringify(sortedFilters)}`
+        // Include orderByField and orderDirection in the cache key
+        return `${endpointName}-${collectionPath}-${JSON.stringify(sortedFilters)}-${orderByField}-${orderDirection}`
       },
       merge: (currentCache, newItems) => {
         const mergedCache = [...currentCache]

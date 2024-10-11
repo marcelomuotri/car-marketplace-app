@@ -7,7 +7,7 @@ import BasicLayout from '@/components/BasicLayout'
 import CategoriesList from '@/components/Home/CategoriesList'
 import TopBar from '@/components/Home/TopBar'
 import FiltersModal from '@/components/Home/FiltersModal'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView, StatusBar } from 'react-native'
 import { ThemedText } from '@/components/ThemedText'
 import { useTranslation } from 'react-i18next'
 import { competitionCategories, staticCategories } from '@/constants/Categories'
@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/state/store'
 import FilterButton from '@/components/FilterButton'
 import { countAppliedFilters, cleanFilters } from '@/components/utils/functions'
+import SorterModal from '@/components/Home/SorterModal'
 
 export type ProductListProps = Pick<
   Product,
@@ -41,9 +42,12 @@ const Index: React.FC = () => {
   })
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
+  const [isSorterModalVisible, setIsSorterModalVisible] = useState(false)
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [filtersApplied, setFiltersApplied] = useState(0)
+  const [sortBy, setSortBy] = useState('')
+  const [sorterApplied, setSorterApplied] = useState(0)
 
   // Estado para manejar productos cargados y el cursor para la paginación
   const [cursor, setCursor] = useState(null)
@@ -58,23 +62,6 @@ const Index: React.FC = () => {
   const selectedCategoryLabel = categoriesToShow
     .find((category) => category.id === filters.category)
     ?.label.toLowerCase()
-
-  const productFilters: any = {
-    active: true,
-    competition: [filters.competition],
-  }
-
-  if (search) {
-    productFilters.title = search
-  }
-
-  if (selectedCategoryLabel) {
-    productFilters.category = selectedCategoryLabel
-  }
-
-  if (filters.subCategory) {
-    productFilters.subCategory = filters.subCategory
-  }
 
   useEffect(() => {
     const selectedCategoryLabel = categoriesToShow
@@ -104,11 +91,21 @@ const Index: React.FC = () => {
     }),
     limitCount: 50,
     cursor,
+    sortBy,
   })
 
   useEffect(() => {
     setFiltersApplied(countAppliedFilters(filters))
+    setSortBy('')
   }, [filters])
+
+  useEffect(() => {
+    if (sortBy) {
+      setSorterApplied(1)
+    } else {
+      setSorterApplied(0)
+    }
+  }, [sortBy])
 
   const { categories, isLoadingCategories } = useGetAllCategories()
 
@@ -152,87 +149,115 @@ const Index: React.FC = () => {
   }
 
   return (
-    <BasicLayout>
-      <TopBar
-        selectedCompetition={filters.competition}
-        setSelectedCompetition={(competition) => {
-          setFilters({
-            competition,
-          })
-        }}
-        setCursor={setCursor}
-        uid={userData?.uid}
-        t={t}
-        setSearch={setSearch}
-      />
+    <>
+      <StatusBar barStyle="dark-content" />
+      <BasicLayout>
+        <TopBar
+          selectedCompetition={filters.competition}
+          setSelectedCompetition={(competition) => {
+            setFilters({
+              competition,
+            })
+          }}
+          setCursor={setCursor}
+          uid={userData?.uid}
+          t={t}
+          setSearch={setSearch}
+        />
 
-      <Input
-        inputContainerStyle={styles.inputContainerStyle}
-        containerStyle={styles.containerStyle}
-        inputStyle={[styles.inputStyle]}
-        placeholder="Buscar"
-        leftIcon={<SearchIcon />}
-        leftIconContainerStyle={{ marginRight: 6 }}
-        onPress={onOpenSearchDrawer}
-        value={search}
-      />
-      <BottomSheetDrawer
-        isVisible={isSearchDrawerOpen}
-        handleClose={() => setIsSearchDrawerOpen(false)}
-        height={0.94}
-      >
         <Input
           inputContainerStyle={styles.inputContainerStyle}
           containerStyle={styles.containerStyle}
           inputStyle={[styles.inputStyle]}
           placeholder="Buscar"
           leftIcon={<SearchIcon />}
-          leftIconContainerStyle={{ marginRight: 15 }}
-          onPress={() => setIsSearchDrawerOpen(true)}
-          onChangeText={(text) => setSearch(text)}
+          leftIconContainerStyle={{ marginRight: 6 }}
+          onPress={onOpenSearchDrawer}
           value={search}
-          onSubmitEditing={() => setIsSearchDrawerOpen(false)}
         />
-        <ScrollView>
-          {products.map((item: ProductListProps) => {
-            return (
-              <ListItem key={item.id} onPress={() => goToIdPage(item.id)}>
-                <ListItem.Content>
-                  <ListItem.Title>
-                    {capitalizeFirstLetter(item.title)}
-                  </ListItem.Title>
-                </ListItem.Content>
-              </ListItem>
-            )
-          })}
-        </ScrollView>
-      </BottomSheetDrawer>
-      <CategoriesList
-        filters={filters}
-        setFilters={setFilters}
-        categoriesToShow={categoriesToShow}
-        setCursor={setCursor}
-        setFiltersApplied={setFiltersApplied}
-      />
-      <View style={styles.header}>
-        <ThemedText type="title">{t('featuredProducts')} </ThemedText>
-      </View>
-      <ProductList
-        isLoading={isLoading}
-        setCursor={setCursor}
-        products={products}
-        refetch={refetch}
-      />
-      <FiltersModal
-        filters={filters}
-        categoriesToShow={categoriesToShow}
-        isVisible={isFilterModalVisible}
-        toggleModal={toggleModal}
-        categories={categories}
-        applyFilters={applyFilters}
-        t={t}
-      />
-    </BasicLayout>
+        <BottomSheetDrawer
+          isVisible={isSearchDrawerOpen}
+          handleClose={() => setIsSearchDrawerOpen(false)}
+          height={0.94}
+        >
+          <Input
+            inputContainerStyle={styles.inputContainerStyle}
+            containerStyle={styles.containerStyle}
+            inputStyle={[styles.inputStyle]}
+            placeholder="Buscar"
+            leftIcon={<SearchIcon />}
+            leftIconContainerStyle={{ marginRight: 15 }}
+            onPress={() => setIsSearchDrawerOpen(true)}
+            onChangeText={(text) => setSearch(text)}
+            value={search}
+            onSubmitEditing={() => setIsSearchDrawerOpen(false)}
+          />
+          <ScrollView>
+            {products.map((item: ProductListProps) => {
+              return (
+                <ListItem key={item.id} onPress={() => goToIdPage(item.id)}>
+                  <ListItem.Content>
+                    <ListItem.Title>
+                      {capitalizeFirstLetter(item.title)}
+                    </ListItem.Title>
+                  </ListItem.Content>
+                </ListItem>
+              )
+            })}
+          </ScrollView>
+        </BottomSheetDrawer>
+        <CategoriesList
+          filters={filters}
+          setFilters={setFilters}
+          categoriesToShow={categoriesToShow}
+          setCursor={setCursor}
+          setFiltersApplied={setFiltersApplied}
+        />
+        <View style={styles.header}>
+          <ThemedText type="title">{t('featuredProducts')} </ThemedText>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <FilterButton
+              title="Ordenar"
+              filtersApplied={sorterApplied}
+              onPress={() => {
+                setCursor(null)
+                setIsSorterModalVisible(true)
+              }}
+            />
+            <FilterButton
+              title="Filtros"
+              filtersApplied={filtersApplied}
+              onPress={() => {
+                setCursor(null)
+                setIsFilterModalVisible(true)
+              }}
+            />
+          </View>
+        </View>
+        <ProductList
+          isLoading={isLoading}
+          setCursor={setCursor}
+          products={products}
+          refetch={refetch}
+        />
+        <FiltersModal
+          filters={filters}
+          categoriesToShow={categoriesToShow}
+          isVisible={isFilterModalVisible}
+          toggleModal={toggleModal}
+          categories={categories}
+          applyFilters={applyFilters}
+          t={t}
+        />
+        <SorterModal
+          isVisible={isSorterModalVisible}
+          toggleModal={() => setIsSorterModalVisible(!isSorterModalVisible)}
+          t={t}
+          setSortBy={setSortBy}
+          sortBy={sortBy}
+        />
+      </BasicLayout>
+    </>
   )
 }
 

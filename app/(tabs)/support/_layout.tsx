@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router'
-import { View } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import NotificationIcon from '@/assets/icons/NotificationIcon'
 
 export default function SupportLayout() {

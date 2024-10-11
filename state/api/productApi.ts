@@ -35,17 +35,27 @@ export const useGetAllProducts = ({
   filters,
   limitCount,
   cursor,
+  sortBy, // Nuevo argumento para pasar el ordenamiento
 }: any) => {
   const cleanedFilters = cleanFilters(filters)
-  const { data, error, isLoading, refetch } = useGetProductsQuery({
+
+  // Preparamos las opciones de consulta, pero solo añadimos el ordenamiento si es necesario
+  const queryOptions: any = {
     collectionPath: base,
     populate,
     filters: { ...cleanedFilters },
     limitCount,
     cursor,
-    //orderByField: randomOrder.field,
-    //orderDirection: randomOrder.direction,
-  })
+  }
+
+  // Añadir el campo de ordenamiento si se proporciona
+  if (sortBy) {
+    console.log(sortBy, 'orderBy')
+    queryOptions.orderByField = 'price' // El campo por el cual se ordena
+    queryOptions.orderDirection = sortBy
+  }
+
+  const { data, error, isLoading, refetch } = useGetProductsQuery(queryOptions)
 
   return {
     products: data,

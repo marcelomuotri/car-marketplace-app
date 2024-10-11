@@ -101,7 +101,7 @@ const FiltersModal = ({
     >
       <View style={styles.modalContainer}>
         <View style={styles.header}>
-          <ThemedText style={styles.modalTitle} type="title">
+          <ThemedText style={styles.modalTitle} type="defaultSemiBold">
             Filtros
           </ThemedText>
           <TouchableOpacity onPress={onCancelAndCloseModal}>

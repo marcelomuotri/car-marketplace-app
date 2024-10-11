@@ -20,9 +20,9 @@
       "usesAppleSignIn": true
     },
     "android": {
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon-2y4.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#3D9970"
       },
       "package": "com.muotrimarcelo.carmarketplaceapp",

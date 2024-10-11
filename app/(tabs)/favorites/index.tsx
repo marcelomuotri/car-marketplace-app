@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet, Image, StatusBar } from 'react-native'
 import { useDeleteFavorite, useGetAllFavorites } from '@/state/api/favoritesApi'
 import { useGetProductsByIds } from '@/state/api/productApi'
 import { useSelector } from 'react-redux'
@@ -61,41 +61,49 @@ const FavoritesScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      {productsWithFavoriteId?.map((product: ProductSummary) => {
-        return (
-          <ListItem.Swipeable
-            key={product.title}
-            onPress={() => handlePress(product.id)}
-            rightContent={() => (
-              <Button
-                onPress={() => onDeleteFavorite(product.favoriteId)}
-                icon={<TrashIcon />}
-                buttonStyle={{ minHeight: '100%', backgroundColor: '#D65B5B' }}
-              />
-            )}
-          >
-            <View style={styles.cardContainer}>
-              <Image source={{ uri: product.photo1Url }} style={styles.image} />
-              <View style={styles.description}>
-                <View>
+    <>
+      <View style={styles.container}>
+        {productsWithFavoriteId?.map((product: ProductSummary) => {
+          return (
+            <ListItem.Swipeable
+              key={product.title}
+              onPress={() => handlePress(product.id)}
+              rightContent={() => (
+                <Button
+                  onPress={() => onDeleteFavorite(product.favoriteId)}
+                  icon={<TrashIcon />}
+                  buttonStyle={{
+                    minHeight: '100%',
+                    backgroundColor: '#D65B5B',
+                  }}
+                />
+              )}
+            >
+              <View style={styles.cardContainer}>
+                <Image
+                  source={{ uri: product.photo1Url }}
+                  style={styles.image}
+                />
+                <View style={styles.description}>
+                  <View>
+                    <ThemedText type="defaultSemiBold">
+                      {product.title}
+                    </ThemedText>
+                    <ThemedText>Visitas: {product.visitors}</ThemedText>
+                  </View>
                   <ThemedText type="defaultSemiBold">
-                    {product.title}
+                    {/* {getCurrency(product.currency)} {product.price} */}
+                    {product?.price
+                      ? `${getCurrency(product.currency)} ${formatNumber(product.price)}`
+                      : 'Solicitar cotización'}
                   </ThemedText>
-                  <ThemedText>Visitas: {product.visitors}</ThemedText>
                 </View>
-                <ThemedText type="defaultSemiBold">
-                  {/* {getCurrency(product.currency)} {product.price} */}
-                  {product?.price
-                    ? `${getCurrency(product.currency)} ${formatNumber(product.price)}`
-                    : 'Solicitar cotización'}
-                </ThemedText>
               </View>
-            </View>
-          </ListItem.Swipeable>
-        )
-      })}
-    </View>
+            </ListItem.Swipeable>
+          )
+        })}
+      </View>
+    </>
   )
 }
 
